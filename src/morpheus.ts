@@ -127,7 +127,12 @@ export abstract class Morpheus {
   /// --- PARASWAP
   ///////////////////////////////////////////////////////////////
 
-  public static exchange(srcToken: string, destToken: string, underlyingAmount: BigNumber, callData: BytesLike): BytesLike {
+  public static exchange(
+    srcToken: string,
+    destToken: string,
+    underlyingAmount: BigNumber,
+    callData: BytesLike
+  ): BytesLike {
     return this.interface.encodeFunctionData('exchange(address,address,uint256,bytes)', [
       srcToken,
       destToken,
