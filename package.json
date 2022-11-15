@@ -2,6 +2,7 @@
   "name": "@morphous/trinity",
   "version": "0.1.1",
   "license": "GPL-2.0",
+  "keywords": ["SDK", "Morpho Protocol", "Morphous.xyz", "DSProxy"],
   "description": "🛠 SDK for building applications on top of Morphous contracts.",
   "main": "dist/index.js",
   "typings": "dist/index.d.ts",
