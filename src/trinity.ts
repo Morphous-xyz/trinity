@@ -1,10 +1,25 @@
+import NeoABI from './abi/neo.json'
 import MorpheusABI from './abi/morpheus.json'
 import { Interface } from '@ethersproject/abi'
 import { BytesLike } from '@ethersproject/bytes'
-import { BigNumber } from '@ethersproject/bignumber'
+import { BigNumber } from '@ethersproject/bigNumber'
+import { MORPHO_COMPOUND, MORPHO_AAVE } from './constants'
 
-export abstract class Morpheus {
+export abstract class Trinity {
+  static neo_interface: Interface = new Interface(NeoABI)
   static interface: Interface = new Interface(MorpheusABI)
+
+  ////////////////////////////////////////////////////////////////
+  /// --- FLASHLOAN
+  ///////////////////////////////////////////////////////////////
+
+  public static executeFlashloan(_tokens: string[], _amounts: BigNumber[], _data: BytesLike): BytesLike {
+    return this.neo_interface.encodeFunctionData('executeFlashloan(address[],uint256[],bytes)', [
+      _tokens,
+      _amounts,
+      _data
+    ])
+  }
 
   ////////////////////////////////////////////////////////////////
   /// --- MULTICALL
@@ -28,6 +43,8 @@ export abstract class Morpheus {
     _amount: BigNumber,
     _maxGasForMatching: BigNumber = BigNumber.from(0)
   ): BytesLike {
+    this._validateMarket(_market)
+
     if (_maxGasForMatching.eq(BigNumber.from(0))) {
       return this.interface.encodeFunctionData('supply(address,address,address,uint256)', [
         _market,
@@ -46,6 +63,7 @@ export abstract class Morpheus {
   }
 
   public static withdraw(_market: string, _poolToken: string, _amount: number): BytesLike {
+    this._validateMarket(_market)
     return this.interface.encodeFunctionData('withdraw(address,address,uint256)', [_market, _poolToken, _amount])
   }
 
@@ -59,6 +77,8 @@ export abstract class Morpheus {
     _amount: BigNumber,
     _maxGasForMatching: BigNumber = BigNumber.from(0)
   ): BytesLike {
+    this._validateMarket(_market)
+
     if (_maxGasForMatching.eq(BigNumber.from(0))) {
       return this.interface.encodeFunctionData('borrow(address,address,uint256,uint256)', [
         _market,
@@ -70,9 +90,11 @@ export abstract class Morpheus {
     return this.interface.encodeFunctionData('borrow(address,address,uint256)', [_market, _poolToken, _amount])
   }
 
-  public static repay(market: string, _poolToken: string, _onBehalf: string, _amount: BigNumber): BytesLike {
+  public static repay(_market: string, _poolToken: string, _onBehalf: string, _amount: BigNumber): BytesLike {
+    this._validateMarket(_market)
+
     return this.interface.encodeFunctionData('repay(address,address,address,uint256)', [
-      market,
+      _market,
       _poolToken,
       _onBehalf,
       _amount
@@ -139,5 +161,9 @@ export abstract class Morpheus {
       underlyingAmount,
       callData
     ])
+  }
+
+  private static _validateMarket(_market: string) {
+    if (_market !== MORPHO_COMPOUND && _market !== MORPHO_AAVE) throw new Error('INVALID_MARKET')
   }
 }

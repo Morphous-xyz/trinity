@@ -1,2 +1,2 @@
-export * from './morpheus'
-export { NEO, MORPHEUS, FLASHLOAN } from './constants'
+export * from './trinity'
+export { NEO, MORPHEUS, FLASHLOAN, MORPHO_AAVE, MORPHO_COMPOUND } from './constants'
