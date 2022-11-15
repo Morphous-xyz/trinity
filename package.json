@@ -1,5 +1,6 @@
 {
   "name": "@morphous/trinity",
+  "version": "0.1.0",
   "license": "GPL-2.0",
   "description": "🛠 SDK for building applications on top of Morphous contracts.",
   "main": "dist/index.js",
@@ -7,7 +8,6 @@
   "files": [
     "dist"
   ],
-  "module": "dist/v2-sdk.esm.js",
   "scripts": {
     "lint": "tsdx lint src",
     "lint:fix": "tsdx lint src --fix",
