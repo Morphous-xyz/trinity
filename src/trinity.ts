@@ -2,7 +2,7 @@ import NeoABI from './abi/neo.json'
 import MorpheusABI from './abi/morpheus.json'
 import { Interface } from '@ethersproject/abi'
 import { BytesLike } from '@ethersproject/bytes'
-import { BigNumber } from '@ethersproject/bigNumber'
+import { BigNumber } from '@ethersproject/bignumber'
 import { MORPHO_COMPOUND, MORPHO_AAVE } from './constants'
 
 export abstract class Trinity {
@@ -62,7 +62,7 @@ export abstract class Trinity {
     ])
   }
 
-  public static withdraw(_market: string, _poolToken: string, _amount: number): BytesLike {
+  public static withdraw(_market: string, _poolToken: string, _amount: BigNumber): BytesLike {
     this._validateMarket(_market)
     return this.interface.encodeFunctionData('withdraw(address,address,uint256)', [_market, _poolToken, _amount])
   }
