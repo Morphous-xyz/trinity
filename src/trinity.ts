@@ -133,6 +133,10 @@ export abstract class Trinity {
     return this.interface.encodeFunctionData('transfer(address,address,uint256)', [_token, _to, _amount])
   }
 
+  public static depositSTETH(_amount: BigNumber): BytesLike {
+    return this.interface.encodeFunctionData('depositSTETH(uint256)', [_amount])
+  }
+
   public static depositWETH(_amount: BigNumber): BytesLike {
     return this.interface.encodeFunctionData('depositWETH(uint256)', [_amount])
   }
