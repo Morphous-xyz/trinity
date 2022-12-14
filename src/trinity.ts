@@ -41,6 +41,11 @@ export abstract class Trinity {
     )
   }
 
+  public static multicallFlashloan(_proxy: string, _deadline: number, _calls: BytesLike[]): BytesLike {
+    const deadline = Math.floor(Date.now() / 1000) + _deadline
+    return this.interface._abiCoder.encode(['address', 'uint256', 'bytes[]'], [_proxy, deadline, _calls])
+  }
+
   ////////////////////////////////////////////////////////////////
   /// --- MULTICALL
   ///////////////////////////////////////////////////////////////
