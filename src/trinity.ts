@@ -62,7 +62,7 @@ export abstract class Trinity {
     _receiver: string
   ): BytesLike {
     const _data = this.multicall(_deadline, _calls)
-    return this.interface.encodeFunctionData('executeWithReceiver(address[],bytes,address)', [
+    return this.neo_interface.encodeFunctionData('executeWithReceiver(address[],bytes,address)', [
       _tokens,
       _data,
       _receiver
