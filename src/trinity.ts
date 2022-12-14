@@ -3,7 +3,7 @@ import MorpheusABI from './abi/morpheus.json'
 import { Interface } from '@ethersproject/abi'
 import { BytesLike } from '@ethersproject/bytes'
 import { BigNumber } from '@ethersproject/bignumber'
-import { MORPHO_COMPOUND, MORPHO_AAVE } from './constants'
+import { MORPHO_COMPOUND, MORPHO_AAVE, AUGUSTUS, INCH_ROUTER } from './constants'
 
 export abstract class Trinity {
   static neo_interface: Interface = new Interface(NeoABI)
@@ -13,12 +13,32 @@ export abstract class Trinity {
   /// --- FLASHLOAN
   ///////////////////////////////////////////////////////////////
 
-  public static executeFlashloan(_tokens: string[], _amounts: BigNumber[], _data: BytesLike): BytesLike {
-    return this.neo_interface.encodeFunctionData('executeFlashloan(address[],uint256[],bytes)', [
+  public static executeFlashloan(
+    _tokens: string[],
+    _amounts: BigNumber[],
+    _data: BytesLike,
+    _isAave: boolean
+  ): BytesLike {
+    return this.neo_interface.encodeFunctionData('executeFlashloan(address[],uint256[],bytes,bool)', [
       _tokens,
       _amounts,
-      _data
+      _data,
+      _isAave
     ])
+  }
+
+  public static executeFlashloanWithReceiver(
+    _tokensReceiver: string[],
+    _tokens: string[],
+    _amounts: BigNumber[],
+    _data: BytesLike,
+    _receiver: string,
+    _isAave: boolean
+  ): BytesLike {
+    return this.neo_interface.encodeFunctionData(
+      'executeFlashloanWithReceiver(address[],address[],uint256[],bytes,address,bool)',
+      [_tokensReceiver, _tokens, _amounts, _data, _receiver, _isAave]
+    )
   }
 
   ////////////////////////////////////////////////////////////////
@@ -28,6 +48,20 @@ export abstract class Trinity {
   public static multicall(_deadline: number, _calls: BytesLike[]): BytesLike {
     const deadline = Math.floor(Date.now() / 1000) + _deadline
     return this.interface.encodeFunctionData('multicall(uint256,bytes[])', [deadline, _calls])
+  }
+
+  public static multicallWithReceiver(
+    _tokens: string[],
+    _deadline: number,
+    _calls: BytesLike[],
+    _receiver: string
+  ): BytesLike {
+    const _data = this.multicall(_deadline, _calls)
+    return this.interface.encodeFunctionData('executeWithReceiver(address[],bytes,address)', [
+      _tokens,
+      _data,
+      _receiver
+    ])
   }
 
   ////////////////////////////////////////////////////////////////
@@ -150,16 +184,19 @@ export abstract class Trinity {
   }
 
   ////////////////////////////////////////////////////////////////
-  /// --- PARASWAP
+  /// --- AGGREGATOR
   ///////////////////////////////////////////////////////////////
 
   public static exchange(
+    aggregator: string,
     srcToken: string,
     destToken: string,
     underlyingAmount: BigNumber,
     callData: BytesLike
   ): BytesLike {
-    return this.interface.encodeFunctionData('exchange(address,address,uint256,bytes)', [
+    this._validateAggregator(aggregator)
+    return this.interface.encodeFunctionData('exchange(address,address,address,uint256,bytes)', [
+      aggregator,
       srcToken,
       destToken,
       underlyingAmount,
@@ -169,5 +206,9 @@ export abstract class Trinity {
 
   private static _validateMarket(_market: string) {
     if (_market !== MORPHO_COMPOUND && _market !== MORPHO_AAVE) throw new Error('INVALID_MARKET')
+  }
+
+  private static _validateAggregator(_aggregator: string) {
+    if (_aggregator !== AUGUSTUS && _aggregator !== INCH_ROUTER) throw new Error('INVALID_AGGREGATOR')
   }
 }

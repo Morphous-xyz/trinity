@@ -11,6 +11,11 @@
   },
   {
     "inputs": [],
+    "name": "INVALID_AGGREGATOR",
+    "type": "error"
+  },
+  {
+    "inputs": [],
     "name": "INVALID_MARKET",
     "type": "error"
   },
@@ -91,7 +96,7 @@
         "type": "uint256"
       }
     ],
-    "name": "ExchangeParaswap",
+    "name": "ExchangeAggregator",
     "type": "event"
   },
   {
@@ -229,6 +234,19 @@
   {
     "inputs": [],
     "name": "AUGUSTUS",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "INCH_ROUTER",
     "outputs": [
       {
         "internalType": "address",
@@ -437,6 +455,11 @@
   },
   {
     "inputs": [
+      {
+        "internalType": "address",
+        "name": "aggregator",
+        "type": "address"
+      },
       {
         "internalType": "address",
         "name": "srcToken",
