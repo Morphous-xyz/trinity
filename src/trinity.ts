@@ -3,7 +3,7 @@ import MorpheusABI from './abi/morpheus.json'
 import { Interface } from '@ethersproject/abi'
 import { BytesLike } from '@ethersproject/bytes'
 import { BigNumber } from '@ethersproject/bignumber'
-import { MORPHO_COMPOUND, MORPHO_AAVE, AUGUSTUS, INCH_ROUTER } from './constants'
+import { MORPHO_COMPOUND, MORPHO_AAVE} from './constants'
 
 export abstract class Trinity {
   static neo_interface: Interface = new Interface(NeoABI)
@@ -193,15 +193,15 @@ export abstract class Trinity {
   ///////////////////////////////////////////////////////////////
 
   public static exchange(
-    aggregator: string,
+    // aggregator: string,
     srcToken: string,
     destToken: string,
     underlyingAmount: BigNumber,
     callData: BytesLike
   ): BytesLike {
-    this._validateAggregator(aggregator)
-    return this.interface.encodeFunctionData('exchange(address,address,address,uint256,bytes)', [
-      aggregator,
+    // this._validateAggregator(aggregator)
+    return this.interface.encodeFunctionData('exchange(address,address,uint256,bytes)', [
+      // aggregator,
       srcToken,
       destToken,
       underlyingAmount,
@@ -213,7 +213,7 @@ export abstract class Trinity {
     if (_market !== MORPHO_COMPOUND && _market !== MORPHO_AAVE) throw new Error('INVALID_MARKET')
   }
 
-  private static _validateAggregator(_aggregator: string) {
-    if (_aggregator !== AUGUSTUS && _aggregator !== INCH_ROUTER) throw new Error('INVALID_AGGREGATOR')
-  }
+  // private static _validateAggregator(_aggregator: string) {
+    // if (_aggregator !== AUGUSTUS && _aggregator !== INCH_ROUTER) throw new Error('INVALID_AGGREGATOR')
+  // }
 }
