@@ -457,11 +457,6 @@
     "inputs": [
       {
         "internalType": "address",
-        "name": "aggregator",
-        "type": "address"
-      },
-      {
-        "internalType": "address",
         "name": "srcToken",
         "type": "address"
       },
