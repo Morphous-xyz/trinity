@@ -1,44 +1,14 @@
 [
-  {
-    "inputs": [],
-    "stateMutability": "nonpayable",
-    "type": "constructor"
-  },
-  {
-    "inputs": [],
-    "name": "DEADLINE_EXCEEDED",
-    "type": "error"
-  },
-  {
-    "inputs": [],
-    "name": "INVALID_AGGREGATOR",
-    "type": "error"
-  },
-  {
-    "inputs": [],
-    "name": "INVALID_MARKET",
-    "type": "error"
-  },
-  {
-    "inputs": [],
-    "name": "SWAP_FAILED",
-    "type": "error"
-  },
+  { "inputs": [], "stateMutability": "nonpayable", "type": "constructor" },
+  { "inputs": [], "name": "DEADLINE_EXCEEDED", "type": "error" },
+  { "inputs": [], "name": "INVALID_AGGREGATOR", "type": "error" },
+  { "inputs": [], "name": "INVALID_MARKET", "type": "error" },
+  { "inputs": [], "name": "SWAP_FAILED", "type": "error" },
   {
     "anonymous": false,
     "inputs": [
-      {
-        "indexed": true,
-        "internalType": "address",
-        "name": "token",
-        "type": "address"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "amount",
-        "type": "uint256"
-      }
+      { "indexed": true, "internalType": "address", "name": "token", "type": "address" },
+      { "indexed": false, "internalType": "uint256", "name": "amount", "type": "uint256" }
     ],
     "name": "Borrowed",
     "type": "event"
@@ -46,24 +16,9 @@
   {
     "anonymous": false,
     "inputs": [
-      {
-        "indexed": true,
-        "internalType": "address",
-        "name": "token",
-        "type": "address"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "amount",
-        "type": "uint256"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "maxGas",
-        "type": "uint256"
-      }
+      { "indexed": true, "internalType": "address", "name": "token", "type": "address" },
+      { "indexed": false, "internalType": "uint256", "name": "amount", "type": "uint256" },
+      { "indexed": false, "internalType": "uint256", "name": "maxGas", "type": "uint256" }
     ],
     "name": "BorrowedWithMaxGas",
     "type": "event"
@@ -71,30 +26,10 @@
   {
     "anonymous": false,
     "inputs": [
-      {
-        "indexed": false,
-        "internalType": "address",
-        "name": "_tokenFrom",
-        "type": "address"
-      },
-      {
-        "indexed": false,
-        "internalType": "address",
-        "name": "_tokenTo",
-        "type": "address"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "_amountFrom",
-        "type": "uint256"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "_amountTo",
-        "type": "uint256"
-      }
+      { "indexed": false, "internalType": "address", "name": "_tokenFrom", "type": "address" },
+      { "indexed": false, "internalType": "address", "name": "_tokenTo", "type": "address" },
+      { "indexed": false, "internalType": "uint256", "name": "_amountFrom", "type": "uint256" },
+      { "indexed": false, "internalType": "uint256", "name": "_amountTo", "type": "uint256" }
     ],
     "name": "ExchangeAggregator",
     "type": "event"
@@ -102,18 +37,8 @@
   {
     "anonymous": false,
     "inputs": [
-      {
-        "indexed": false,
-        "internalType": "address",
-        "name": "_account",
-        "type": "address"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "_claimable",
-        "type": "uint256"
-      }
+      { "indexed": false, "internalType": "address", "name": "_account", "type": "address" },
+      { "indexed": false, "internalType": "uint256", "name": "_claimable", "type": "uint256" }
     ],
     "name": "MorphoClaimed",
     "type": "event"
@@ -121,62 +46,25 @@
   {
     "anonymous": false,
     "inputs": [
-      {
-        "indexed": true,
-        "internalType": "address",
-        "name": "token",
-        "type": "address"
-      },
-      {
-        "indexed": false,
-        "internalType": "address",
-        "name": "onBehalf",
-        "type": "address"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "amount",
-        "type": "uint256"
-      }
+      { "indexed": true, "internalType": "address", "name": "token", "type": "address" },
+      { "indexed": false, "internalType": "address", "name": "onBehalf", "type": "address" },
+      { "indexed": false, "internalType": "uint256", "name": "amount", "type": "uint256" }
     ],
     "name": "Repaid",
     "type": "event"
   },
   {
     "anonymous": false,
-    "inputs": [
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "_claimable",
-        "type": "uint256"
-      }
-    ],
+    "inputs": [{ "indexed": false, "internalType": "uint256", "name": "_claimable", "type": "uint256" }],
     "name": "RewardClaimed",
     "type": "event"
   },
   {
     "anonymous": false,
     "inputs": [
-      {
-        "indexed": true,
-        "internalType": "address",
-        "name": "token",
-        "type": "address"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "amount",
-        "type": "uint256"
-      },
-      {
-        "indexed": true,
-        "internalType": "address",
-        "name": "onBehalfOf",
-        "type": "address"
-      }
+      { "indexed": true, "internalType": "address", "name": "token", "type": "address" },
+      { "indexed": false, "internalType": "uint256", "name": "amount", "type": "uint256" },
+      { "indexed": true, "internalType": "address", "name": "onBehalfOf", "type": "address" }
     ],
     "name": "SuppliedOnBehalf",
     "type": "event"
@@ -184,30 +72,10 @@
   {
     "anonymous": false,
     "inputs": [
-      {
-        "indexed": true,
-        "internalType": "address",
-        "name": "token",
-        "type": "address"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "amount",
-        "type": "uint256"
-      },
-      {
-        "indexed": true,
-        "internalType": "address",
-        "name": "onBehalOf",
-        "type": "address"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "maxGas",
-        "type": "uint256"
-      }
+      { "indexed": true, "internalType": "address", "name": "token", "type": "address" },
+      { "indexed": false, "internalType": "uint256", "name": "amount", "type": "uint256" },
+      { "indexed": true, "internalType": "address", "name": "onBehalOf", "type": "address" },
+      { "indexed": false, "internalType": "uint256", "name": "maxGas", "type": "uint256" }
     ],
     "name": "SuppliedWithMaxGas",
     "type": "event"
@@ -215,18 +83,8 @@
   {
     "anonymous": false,
     "inputs": [
-      {
-        "indexed": true,
-        "internalType": "address",
-        "name": "token",
-        "type": "address"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "amount",
-        "type": "uint256"
-      }
+      { "indexed": true, "internalType": "address", "name": "token", "type": "address" },
+      { "indexed": false, "internalType": "uint256", "name": "amount", "type": "uint256" }
     ],
     "name": "Withdrawn",
     "type": "event"
@@ -234,72 +92,36 @@
   {
     "inputs": [],
     "name": "AUGUSTUS",
-    "outputs": [
-      {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
-      }
-    ],
+    "outputs": [{ "internalType": "address", "name": "", "type": "address" }],
     "stateMutability": "view",
     "type": "function"
   },
   {
     "inputs": [],
     "name": "INCH_ROUTER",
-    "outputs": [
-      {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
-      }
-    ],
+    "outputs": [{ "internalType": "address", "name": "", "type": "address" }],
     "stateMutability": "view",
     "type": "function"
   },
   {
     "inputs": [],
     "name": "TOKEN_TRANSFER_PROXY",
-    "outputs": [
-      {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
-      }
-    ],
+    "outputs": [{ "internalType": "address", "name": "", "type": "address" }],
     "stateMutability": "view",
     "type": "function"
   },
   {
     "inputs": [],
     "name": "_MORPHEUS",
-    "outputs": [
-      {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
-      }
-    ],
+    "outputs": [{ "internalType": "address", "name": "", "type": "address" }],
     "stateMutability": "view",
     "type": "function"
   },
   {
     "inputs": [
-      {
-        "internalType": "address",
-        "name": "_token",
-        "type": "address"
-      },
-      {
-        "internalType": "address",
-        "name": "_to",
-        "type": "address"
-      },
-      {
-        "internalType": "uint256",
-        "name": "_amount",
-        "type": "uint256"
-      }
+      { "internalType": "address", "name": "_token", "type": "address" },
+      { "internalType": "address", "name": "_to", "type": "address" },
+      { "internalType": "uint256", "name": "_amount", "type": "uint256" }
     ],
     "name": "approveToken",
     "outputs": [],
@@ -308,45 +130,19 @@
   },
   {
     "inputs": [
-      {
-        "internalType": "address",
-        "name": "_token",
-        "type": "address"
-      },
-      {
-        "internalType": "address",
-        "name": "_acc",
-        "type": "address"
-      }
+      { "internalType": "address", "name": "_token", "type": "address" },
+      { "internalType": "address", "name": "_acc", "type": "address" }
     ],
     "name": "balanceInOf",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
+    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
     "stateMutability": "view",
     "type": "function"
   },
   {
     "inputs": [
-      {
-        "internalType": "address",
-        "name": "_market",
-        "type": "address"
-      },
-      {
-        "internalType": "address",
-        "name": "_poolToken",
-        "type": "address"
-      },
-      {
-        "internalType": "uint256",
-        "name": "_amount",
-        "type": "uint256"
-      }
+      { "internalType": "address", "name": "_market", "type": "address" },
+      { "internalType": "address", "name": "_poolToken", "type": "address" },
+      { "internalType": "uint256", "name": "_amount", "type": "uint256" }
     ],
     "name": "borrow",
     "outputs": [],
@@ -355,26 +151,10 @@
   },
   {
     "inputs": [
-      {
-        "internalType": "address",
-        "name": "_market",
-        "type": "address"
-      },
-      {
-        "internalType": "address",
-        "name": "_poolToken",
-        "type": "address"
-      },
-      {
-        "internalType": "uint256",
-        "name": "_amount",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "_maxGasForMatching",
-        "type": "uint256"
-      }
+      { "internalType": "address", "name": "_market", "type": "address" },
+      { "internalType": "address", "name": "_poolToken", "type": "address" },
+      { "internalType": "uint256", "name": "_amount", "type": "uint256" },
+      { "internalType": "uint256", "name": "_maxGasForMatching", "type": "uint256" }
     ],
     "name": "borrow",
     "outputs": [],
@@ -383,21 +163,9 @@
   },
   {
     "inputs": [
-      {
-        "internalType": "address",
-        "name": "_account",
-        "type": "address"
-      },
-      {
-        "internalType": "uint256",
-        "name": "_claimable",
-        "type": "uint256"
-      },
-      {
-        "internalType": "bytes32[]",
-        "name": "_proof",
-        "type": "bytes32[]"
-      }
+      { "internalType": "address", "name": "_account", "type": "address" },
+      { "internalType": "uint256", "name": "_claimable", "type": "uint256" },
+      { "internalType": "bytes32[]", "name": "_proof", "type": "bytes32[]" }
     ],
     "name": "claim",
     "outputs": [],
@@ -406,21 +174,9 @@
   },
   {
     "inputs": [
-      {
-        "internalType": "address",
-        "name": "_market",
-        "type": "address"
-      },
-      {
-        "internalType": "address[]",
-        "name": "_poolTokens",
-        "type": "address[]"
-      },
-      {
-        "internalType": "bool",
-        "name": "_tradeForMorphoToken",
-        "type": "bool"
-      }
+      { "internalType": "address", "name": "_market", "type": "address" },
+      { "internalType": "address[]", "name": "_poolTokens", "type": "address[]" },
+      { "internalType": "bool", "name": "_tradeForMorphoToken", "type": "bool" }
     ],
     "name": "claim",
     "outputs": [],
@@ -428,26 +184,14 @@
     "type": "function"
   },
   {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "_amount",
-        "type": "uint256"
-      }
-    ],
+    "inputs": [{ "internalType": "uint256", "name": "_amount", "type": "uint256" }],
     "name": "depositSTETH",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
   },
   {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "_amount",
-        "type": "uint256"
-      }
-    ],
+    "inputs": [{ "internalType": "uint256", "name": "_amount", "type": "uint256" }],
     "name": "depositWETH",
     "outputs": [],
     "stateMutability": "nonpayable",
@@ -455,89 +199,33 @@
   },
   {
     "inputs": [
-      {
-        "internalType": "address",
-        "name": "aggregator",
-        "type": "address"
-      },
-      {
-        "internalType": "address",
-        "name": "srcToken",
-        "type": "address"
-      },
-      {
-        "internalType": "address",
-        "name": "destToken",
-        "type": "address"
-      },
-      {
-        "internalType": "uint256",
-        "name": "underlyingAmount",
-        "type": "uint256"
-      },
-      {
-        "internalType": "bytes",
-        "name": "callData",
-        "type": "bytes"
-      }
+      { "internalType": "address", "name": "aggregator", "type": "address" },
+      { "internalType": "address", "name": "srcToken", "type": "address" },
+      { "internalType": "address", "name": "destToken", "type": "address" },
+      { "internalType": "uint256", "name": "underlyingAmount", "type": "uint256" },
+      { "internalType": "bytes", "name": "callData", "type": "bytes" }
     ],
     "name": "exchange",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "received",
-        "type": "uint256"
-      }
-    ],
+    "outputs": [{ "internalType": "uint256", "name": "received", "type": "uint256" }],
     "stateMutability": "payable",
     "type": "function"
   },
   {
     "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "deadline",
-        "type": "uint256"
-      },
-      {
-        "internalType": "bytes[]",
-        "name": "data",
-        "type": "bytes[]"
-      }
+      { "internalType": "uint256", "name": "deadline", "type": "uint256" },
+      { "internalType": "bytes[]", "name": "data", "type": "bytes[]" }
     ],
     "name": "multicall",
-    "outputs": [
-      {
-        "internalType": "bytes32[]",
-        "name": "results",
-        "type": "bytes32[]"
-      }
-    ],
+    "outputs": [{ "internalType": "bytes32[]", "name": "results", "type": "bytes32[]" }],
     "stateMutability": "payable",
     "type": "function"
   },
   {
     "inputs": [
-      {
-        "internalType": "address",
-        "name": "_market",
-        "type": "address"
-      },
-      {
-        "internalType": "address",
-        "name": "_poolToken",
-        "type": "address"
-      },
-      {
-        "internalType": "address",
-        "name": "_onBehalf",
-        "type": "address"
-      },
-      {
-        "internalType": "uint256",
-        "name": "_amount",
-        "type": "uint256"
-      }
+      { "internalType": "address", "name": "_market", "type": "address" },
+      { "internalType": "address", "name": "_poolToken", "type": "address" },
+      { "internalType": "address", "name": "_onBehalf", "type": "address" },
+      { "internalType": "uint256", "name": "_amount", "type": "uint256" }
     ],
     "name": "repay",
     "outputs": [],
@@ -546,26 +234,10 @@
   },
   {
     "inputs": [
-      {
-        "internalType": "address",
-        "name": "_market",
-        "type": "address"
-      },
-      {
-        "internalType": "address",
-        "name": "_poolToken",
-        "type": "address"
-      },
-      {
-        "internalType": "address",
-        "name": "_onBehalf",
-        "type": "address"
-      },
-      {
-        "internalType": "uint256",
-        "name": "_amount",
-        "type": "uint256"
-      }
+      { "internalType": "address", "name": "_market", "type": "address" },
+      { "internalType": "address", "name": "_poolToken", "type": "address" },
+      { "internalType": "address", "name": "_onBehalf", "type": "address" },
+      { "internalType": "uint256", "name": "_amount", "type": "uint256" }
     ],
     "name": "supply",
     "outputs": [],
@@ -574,31 +246,11 @@
   },
   {
     "inputs": [
-      {
-        "internalType": "address",
-        "name": "_market",
-        "type": "address"
-      },
-      {
-        "internalType": "address",
-        "name": "_poolToken",
-        "type": "address"
-      },
-      {
-        "internalType": "address",
-        "name": "_onBehalf",
-        "type": "address"
-      },
-      {
-        "internalType": "uint256",
-        "name": "_amount",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "_maxGasForMatching",
-        "type": "uint256"
-      }
+      { "internalType": "address", "name": "_market", "type": "address" },
+      { "internalType": "address", "name": "_poolToken", "type": "address" },
+      { "internalType": "address", "name": "_onBehalf", "type": "address" },
+      { "internalType": "uint256", "name": "_amount", "type": "uint256" },
+      { "internalType": "uint256", "name": "_maxGasForMatching", "type": "uint256" }
     ],
     "name": "supply",
     "outputs": [],
@@ -607,79 +259,31 @@
   },
   {
     "inputs": [
-      {
-        "internalType": "address",
-        "name": "_token",
-        "type": "address"
-      },
-      {
-        "internalType": "address",
-        "name": "_to",
-        "type": "address"
-      },
-      {
-        "internalType": "uint256",
-        "name": "_amount",
-        "type": "uint256"
-      }
+      { "internalType": "address", "name": "_token", "type": "address" },
+      { "internalType": "address", "name": "_to", "type": "address" },
+      { "internalType": "uint256", "name": "_amount", "type": "uint256" }
     ],
     "name": "transfer",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
+    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
     "stateMutability": "nonpayable",
     "type": "function"
   },
   {
     "inputs": [
-      {
-        "internalType": "address",
-        "name": "_token",
-        "type": "address"
-      },
-      {
-        "internalType": "address",
-        "name": "_from",
-        "type": "address"
-      },
-      {
-        "internalType": "uint256",
-        "name": "_amount",
-        "type": "uint256"
-      }
+      { "internalType": "address", "name": "_token", "type": "address" },
+      { "internalType": "address", "name": "_from", "type": "address" },
+      { "internalType": "uint256", "name": "_amount", "type": "uint256" }
     ],
     "name": "transferFrom",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
+    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
     "stateMutability": "nonpayable",
     "type": "function"
   },
   {
     "inputs": [
-      {
-        "internalType": "address",
-        "name": "_market",
-        "type": "address"
-      },
-      {
-        "internalType": "address",
-        "name": "_poolToken",
-        "type": "address"
-      },
-      {
-        "internalType": "uint256",
-        "name": "_amount",
-        "type": "uint256"
-      }
+      { "internalType": "address", "name": "_market", "type": "address" },
+      { "internalType": "address", "name": "_poolToken", "type": "address" },
+      { "internalType": "uint256", "name": "_amount", "type": "uint256" }
     ],
     "name": "withdraw",
     "outputs": [],
@@ -687,20 +291,11 @@
     "type": "function"
   },
   {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "_amount",
-        "type": "uint256"
-      }
-    ],
+    "inputs": [{ "internalType": "uint256", "name": "_amount", "type": "uint256" }],
     "name": "withdrawWETH",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
   },
-  {
-    "stateMutability": "payable",
-    "type": "receive"
-  }
+  { "stateMutability": "payable", "type": "receive" }
 ]
