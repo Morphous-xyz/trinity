@@ -7,3 +7,6 @@ export const MORPHO_COMPOUND = '0x8888882f8f843896699869179fB6E4f7e3B58888'
 
 export const AUGUSTUS = '0xDEF171Fe48CF0115B1d80b88dc8eAB59176FEe57'
 export const INCH_ROUTER = '0x1111111254EEB25477B68fb85Ed929f73A960582'
+
+export const PARASWAP_API_URL = 'https://apiv5.paraswap.io'
+export const ONE_INCH_API_URL = 'https://api.1inch.io/v5.0/1'
