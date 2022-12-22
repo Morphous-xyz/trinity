@@ -198,15 +198,16 @@ export abstract class Matrix {
     aggregator: string,
     slippage: number
   ): Promise<MatrixData> {
-    const exchangeRoute = await getPrices(aggregator, borrowToken, supplyToken, borrowValue)
+    const exchangeRoute = await getPrices(aggregator, borrowToken, supplyToken, formatUnits(borrowValue, 0), true)
     const exchangeCalldata = await buildExchangeData(
       aggregator,
       borrowToken,
       supplyToken,
-      borrowValue,
+      formatUnits(borrowValue, 0),
       exchangeRoute,
       slippage,
-      smartWallet
+      smartWallet,
+      true
     )
 
     const actionsCallData = Trinity.multicallFlashloan(
@@ -265,7 +266,8 @@ export abstract class Matrix {
             formatUnits(paybackValue, 0),
             paraswapRoute,
             slippage,
-            smartWallet
+            smartWallet,
+            true
           )
         : ''
 
