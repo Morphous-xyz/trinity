@@ -266,8 +266,7 @@ export abstract class Matrix {
             formatUnits(paybackValue, 0),
             paraswapRoute,
             slippage,
-            smartWallet,
-            true
+            smartWallet
           )
         : ''
 
