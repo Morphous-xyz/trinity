@@ -3,10 +3,18 @@ import { formatUnits, parseUnits } from 'ethers/lib/utils'
 
 import { buildOneInchData, getOneInchPrices } from './oneInch'
 import { buildParaswapData, getParaswapPrices } from './paraswap'
+import { Token } from 'types'
 
-export const getPrices = async (aggregator, tokenIn, tokenOut, value, formatted?: boolean) => {
+export const getPrices = async (
+  aggregator: string,
+  tokenIn: Token,
+  tokenOut: Token,
+  value: string,
+  formatted?: boolean
+) => {
   if (tokenIn !== tokenOut) {
     const formattedValue = formatted ? value : formatUnits(parseUnits(value, tokenIn.decimals), 0)
+    console.log('getPrices', formattedValue)
     switch (aggregator) {
       case AUGUSTUS:
         return await getParaswapPrices(tokenIn, tokenOut, formattedValue, true)
@@ -24,17 +32,18 @@ export const getPrices = async (aggregator, tokenIn, tokenOut, value, formatted?
 }
 
 export const buildExchangeData = async (
-  aggregator,
-  tokenIn,
-  tokenOut,
-  value,
-  route,
-  slippage,
-  user,
+  aggregator: string,
+  tokenIn: Token,
+  tokenOut: Token,
+  value: string,
+  route: any,
+  slippage: number,
+  user: string,
   formatted?: boolean
 ) => {
   if (tokenIn !== tokenOut) {
     const formattedValue = formatted ? value : formatUnits(parseUnits(value, tokenIn.decimals), 0)
+    console.log('buildExchangeData', formattedValue)
     switch (aggregator) {
       case AUGUSTUS:
         return await buildParaswapData(tokenIn, tokenOut, formattedValue, route, slippage, user, true)
