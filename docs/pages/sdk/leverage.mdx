@@ -1,0 +1,98 @@
+# Leverage
+
+## Usage
+
+```js copy
+import { Matrix } from '@morphous/trinity'
+
+const data = await Matrix.leverage(
+  morphoMarketAddress,
+  txDeadline,
+  fromWallet,
+  collateralMarketAddress,
+  debtMarketAddress,
+  collateralToken,
+  debtToken,
+  address,
+  smartWallet,
+  collateralValue,
+  debtValue,
+  aggregator,
+  slippage
+)
+```
+
+## Configuration
+
+### morphoMarketAddress
+
+`string` - The Morpho Proxy market address, either Morpho Compound or Morpho Aave v2. The corresponding address can be found in [Morpho's developer documentation](https://developers.morpho.xyz/interact-with-morpho/deployments).
+
+### txDeadline
+
+`number` - The period of time before the transaction is reverted (in seconds).
+
+### fromWallet
+
+`boolean` - true if the funds should be deposited from the user's wallet, false if the funds should be deposited from the user's DSProxy.
+
+### collateralMarketAddress
+
+`string` - Compound or Aave v2 collateral market address. It can be found in [Compound's documentation](https://docs.compound.finance/v2/#networks) or [Aave v2 documentation](https://docs.aave.com/developers/v/2.0/deployed-contracts/deployed-contracts).
+
+### debtMarketAddress
+
+`string` - Compound or Aave v2 debt market address. It can be found in [Compound's documentation](https://docs.compound.finance/v2/#networks) or [Aave v2 documentation](https://docs.aave.com/developers/v/2.0/deployed-contracts/deployed-contracts).
+
+### collateralToken
+
+`Token` - Object with collateral token data
+
+```js
+{
+  address: string
+  name: string
+  symbol: string
+  decimals: number
+  extensions?: any
+}
+```
+
+### debtToken
+
+`Token` - Object with debt token data
+
+```js
+{
+  address: string
+  name: string
+  symbol: string
+  decimals: number
+  extensions?: any
+}
+```
+
+### userAddress
+
+`string` - User's wallet address.
+
+### smartWalletAddress
+
+`string` - User's DSProxy address.
+
+### collateralValue
+
+`BigNumber` - Value to deposit as collateral.
+
+### debtValue
+
+`BigNumber` - Value to borrow as debt.
+
+### aggregator
+
+`string` - Value to borrow as debt.
+
+### slippage
+
+`number` - min: 0, max: 10000. For example, 50 for 0.50% slippage.
+

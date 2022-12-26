@@ -187,23 +187,23 @@ export abstract class Matrix {
     morphoMarketAddress: string,
     txDeadline: number,
     fromWallet: boolean,
-    supplyMarketAddress: any,
-    borrowMarketAddress: any,
-    supplyToken: Token,
-    borrowToken: Token,
+    collateralMarketAddress: any,
+    debtMarketAddress: any,
+    collateralToken: Token,
+    debtToken: Token,
     address: string,
     smartWallet: string,
-    supplyValue: BigNumber,
-    borrowValue: BigNumber,
+    collateralValue: BigNumber,
+    debtValue: BigNumber,
     aggregator: string,
     slippage: number
   ): Promise<MatrixData> {
-    const exchangeRoute = await getPrices(aggregator, borrowToken, supplyToken, formatUnits(borrowValue, 0), true)
+    const exchangeRoute = await getPrices(aggregator, debtToken, collateralToken, formatUnits(debtValue, 0), true)
     const exchangeCalldata = await buildExchangeData(
       aggregator,
-      borrowToken,
-      supplyToken,
-      formatUnits(borrowValue, 0),
+      debtToken,
+      collateralToken,
+      formatUnits(debtValue, 0),
       exchangeRoute,
       slippage,
       smartWallet,
@@ -214,23 +214,23 @@ export abstract class Matrix {
       smartWallet,
       txDeadline,
       [
-        fromWallet ? Trinity.transferFrom(supplyToken.address, address, supplyValue) : '',
-        supplyMarketAddress !== borrowMarketAddress
-          ? Trinity.exchange(aggregator, borrowToken.address, supplyToken.address, borrowValue, exchangeCalldata)
+        fromWallet ? Trinity.transferFrom(collateralToken.address, address, collateralValue) : '',
+        collateralMarketAddress !== debtMarketAddress
+          ? Trinity.exchange(aggregator, debtToken.address, collateralToken.address, debtValue, exchangeCalldata)
           : '',
         Trinity.supply(
           morphoMarketAddress,
-          supplyMarketAddress,
+          collateralMarketAddress,
           smartWallet,
-          supplyValue.add(
-            supplyMarketAddress !== borrowMarketAddress ? parseUnits(exchangeRoute['destAmount'], 0) : borrowValue
+          collateralValue.add(
+            collateralMarketAddress !== debtMarketAddress ? parseUnits(exchangeRoute['destAmount'], 0) : debtValue
           )
         ),
-        Trinity.borrow(morphoMarketAddress, borrowMarketAddress, borrowValue),
-        Trinity.transfer(borrowToken.address, FLASHLOAN, borrowValue)
+        Trinity.borrow(morphoMarketAddress, debtMarketAddress, debtValue),
+        Trinity.transfer(debtToken.address, FLASHLOAN, debtValue)
       ].filter(i => i !== '')
     )
-    const calldata = Trinity.executeFlashloan([borrowToken.address], [borrowValue], actionsCallData, false)
+    const calldata = Trinity.executeFlashloan([debtToken.address], [debtValue], actionsCallData, false)
 
     return {
       to: NEO,

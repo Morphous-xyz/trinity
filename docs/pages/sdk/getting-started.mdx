@@ -1,0 +1,90 @@
+# Getting Started
+
+## Installation
+
+To install and save in your package.json dependencies, run the command below using a package manager:
+
+import { Tab, Tabs } from 'nextra-theme-docs'
+
+<Tabs items={['npm', 'yarn', 'pnpm']} defaultIndex="1">
+  <Tab>
+    ```shell copy
+    npm i @morphous/trinity
+    ```
+  </Tab>
+  <Tab>
+    ```shell copy
+    yarn add @morphous/trinity
+    ```
+  </Tab>
+  <Tab>
+    ```shell copy
+    pnpm i @morphous/trinity
+    ```
+  </Tab>
+</Tabs>
+
+## Usage
+
+```js copy
+import { Matrix } from '@morphous/trinity'
+
+const calldata = Matrix.deposit(
+  morphoMarketAddress,
+  txDeadline,
+  fromWallet,
+  marketAddress,
+  token,
+  userAddress,
+  smartWalletAddress,
+  value,
+)
+```
+
+### Return value
+
+```js
+{
+  to: string
+  data: BytesLike
+  etherValue?: BigNumber
+}
+```
+
+## Execute
+
+```js copy
+import { dsProxyABI, Matrix } from '@morphous/trinity'
+import { prepareWriteContract, writeContract } from '@wagmi/core'
+
+const calldata = Matrix.deposit(
+  morphoMarketAddress,
+  txDeadline,
+  fromWallet,
+  marketAddress,
+  token,
+  userAddress,
+  smartWalletAddress,
+  value,
+)
+
+const config = await prepareWriteContract({
+  address: smartWalletAddress,
+  abi: dsProxyABI,
+  functionName: 'execute',
+  args: [calldata.to, calldata.data],
+  overrides: {
+    value: calldata.etherValue,
+  },
+})
+const data = await writeContract(config)
+```
+
+### Return value
+
+```js
+{
+  hash: `0x${string}`,
+  wait: (confirmations?: number) => Promise<TransactionReceipt>,
+}
+```

@@ -1,0 +1,102 @@
+# Payback & Withdraw
+
+## Usage
+
+```js copy
+import { Matrix } from '@morphous/trinity'
+
+const data = Matrix.paybackWithdraw(
+  morphoMarketAddress,
+  txDeadline,
+  fromWallet,
+  toWallet,
+  paybackMarketAddress,
+  withdrawMarketAddress,
+  paybackToken,
+  withdrawToken,
+  userAddress,
+  smartWalletAddress,
+  paybackValue,
+  withdrawValue,
+  maxPayback,
+  maxWithdraw,
+)
+```
+
+## Configuration
+
+### morphoMarketAddress
+
+`string` - The Morpho Proxy market address, either Morpho Compound or Morpho Aave v2. The corresponding address can be found in [Morpho's developer documentation](https://developers.morpho.xyz/interact-with-morpho/deployments).
+
+### txDeadline
+
+`number` - The period of time before the transaction is reverted (in seconds).
+
+### fromWallet
+
+`boolean` - true if the funds should be repayed from the user's wallet, false if the funds should be repayed from the user's DSProxy.
+
+### toWallet
+
+`boolean` - true if the funds should be transfered to the user's wallet, false if the funds should stay on the user's DSProxy.
+
+### paybackMarketAddress
+
+`string` - Compound or Aave v2 payback market address. It can be found in [Compound's documentation](https://docs.compound.finance/v2/#networks) or [Aave v2 documentation](https://docs.aave.com/developers/v/2.0/deployed-contracts/deployed-contracts).
+
+### withdrawMarketAddress
+
+`string` - Compound or Aave v2 withdraw market address. It can be found in [Compound's documentation](https://docs.compound.finance/v2/#networks) or [Aave v2 documentation](https://docs.aave.com/developers/v/2.0/deployed-contracts/deployed-contracts).
+
+### paybackToken
+
+`Token` - Object with payback token data
+
+```js
+{
+  address: string
+  name: string
+  symbol: string
+  decimals: number
+  extensions?: any
+}
+```
+
+### withdrawToken
+
+`Token` - Object with withdraw token data
+
+```js
+{
+  address: string
+  name: string
+  symbol: string
+  decimals: number
+  extensions?: any
+}
+```
+
+### userAddress
+
+`string` - User's wallet address.
+
+### smartWalletAddress
+
+`string` - User's DSProxy address.
+
+### paybackValue
+
+`BigNumber` - Value to repay.
+
+### withdrawValue
+
+`BigNumber` - Value to withdraw.
+
+### maxPayback
+
+`boolean` - true if all the debt should be repayed, false if not.
+
+### maxWithdraw
+
+`boolean` - true if all the debt should be withdrawn, false if not.
