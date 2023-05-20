@@ -1,26 +1,30 @@
 {
-  "include": ["src", "tests"],
+  "include": ["src/**/*.ts", "tests/**/*.ts"],
   "compilerOptions": {
-    "target": "es2018",
-    "module": "esnext",
+    // Incremental builds
+    "target": "ESNext",
+    "module": "ESNext",
     "importHelpers": true,
     "declaration": true,
     "sourceMap": true,
-    "strict": true,
     "noImplicitAny": false,
     "strictNullChecks": true,
-    "strictFunctionTypes": true,
     "strictPropertyInitialization": true,
     "noImplicitThis": true,
-    "alwaysStrict": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "noImplicitReturns": true,
     "noFallthroughCasesInSwitch": true,
+    // Type checking
+    "skipLibCheck": true,
+    "useDefineForClassFields": true,
     "moduleResolution": "node",
+    // Language and environment
+    "types": ["node"],
+    "lib": ["ESNext"],
     "baseUrl": "./",
     "paths": {
-      "*": ["src/*", "node_modules/*"]
+      "*": ["src/*", "node_modules/*", "tests/*"]
     },
     "esModuleInterop": true,
     "resolveJsonModule": true
