@@ -34,6 +34,11 @@ jobs:
           restore-keys: |
             yarn-
 
+      - name: Install Foundry
+        uses: foundry-rs/foundry-toolchain@v1
+        with:
+          version: nightly
+
       - name: Install dependencies
         run: yarn install --frozen-lockfile
 
