@@ -1,18 +1,27 @@
 import NeoABI from "./abi/neo.json";
 import MorpheusABI from "./abi/morpheus.json";
+import TokenActionsModuleABI from "./abi/tokenActionsModule.json";
+import MorphoModuleABI from "./abi/morphoModule.json";
+import { encodeAbiParameters, parseAbiParameters } from "viem"
 import { Interface } from "@ethersproject/abi";
 import { BytesLike } from "@ethersproject/bytes";
 import { BigNumber } from "@ethersproject/bignumber";
 import {
 	MORPHO_COMPOUND,
 	MORPHO_AAVE,
-	AUGUSTUS,
+	MORPHO_AAVE_V3,
+	ZERO_EX_ROUTER,
 	INCH_ROUTER,
+	MORPHO_MODULE_ID,
+	TOKEN_ACTIONS_MODULE_ID
 } from "./constants";
 
+// TODO : Split Trinity in multiple classes (modules)
 export abstract class Trinity {
 	static neo_interface: Interface = new Interface(NeoABI);
 	static interface: Interface = new Interface(MorpheusABI);
+	static token_module_interface: Interface = new Interface(TokenActionsModuleABI);
+	static morpho_module_interface: Interface = new Interface(MorphoModuleABI);
 
 	////////////////////////////////////////////////////////////////
 	/// --- FLASHLOAN
@@ -60,11 +69,13 @@ export abstract class Trinity {
 	/// --- MULTICALL
 	///////////////////////////////////////////////////////////////
 
-	public static multicall(_deadline: number, _calls: BytesLike[]): BytesLike {
-		const deadline = Math.floor(Date.now() / 1000) + _deadline;
-		return this.interface.encodeFunctionData("multicall(uint256,bytes[])", [
+	public static multicall(_deadline: number, _calls: BytesLike[], _argPos: number[]): BytesLike {
+		//const deadline = Math.floor(Date.now() / 1000) + _deadline;
+		const deadline = _deadline;
+		return this.interface.encodeFunctionData("multicall(uint256,bytes[],uint256[])", [
 			deadline,
 			_calls,
+			_argPos,
 		]);
 	}
 
@@ -72,9 +83,10 @@ export abstract class Trinity {
 		_tokens: string[],
 		_deadline: number,
 		_calls: BytesLike[],
+		_argPos: number[],
 		_receiver: string,
 	): BytesLike {
-		const _data = this.multicall(_deadline, _calls);
+		const _data = this.multicall(_deadline, _calls, _argPos);
 		return this.neo_interface.encodeFunctionData(
 			"executeWithReceiver(address[],bytes,address)",
 			[_tokens, _data, _receiver],
@@ -96,17 +108,29 @@ export abstract class Trinity {
 	): BytesLike {
 		this._validateMarket(_market);
 
+		let _calldata: string;
+		let _functionCalldata: any;
+
 		if (_maxGasForMatching.eq(BigNumber.from(0))) {
-			return this.interface.encodeFunctionData(
+			_functionCalldata = this.morpho_module_interface.encodeFunctionData(
 				"supply(address,address,address,uint256)",
 				[_market, _poolToken, _onBehalf, _amount],
 			);
 		}
-		return this.interface.encodeFunctionData(
-			"supply(address,address,address,uint256,uint256)",
-			[_market, _poolToken, _onBehalf, _amount, _maxGasForMatching],
+		else {
+			_functionCalldata = this.morpho_module_interface.encodeFunctionData(
+				"supply(address,address,address,uint256,uint256)",
+				[_market, _poolToken, _onBehalf, _amount, _maxGasForMatching],
+			);
+		}
+
+		_calldata = encodeAbiParameters(
+			parseAbiParameters('bytes1, bytes'),
+			[MORPHO_MODULE_ID, _functionCalldata]
 		);
-	}
+		
+		return _calldata;
+	}	  
 
 	public static withdraw(
 		_market: string,
@@ -194,7 +218,7 @@ export abstract class Trinity {
 		_to: string,
 		_amount: BigNumber,
 	): BytesLike {
-		return this.interface.encodeFunctionData(
+		return this.token_module_interface.encodeFunctionData(
 			"approveToken(address,address,uint256)",
 			[_token, _to, _amount],
 		);
@@ -205,10 +229,21 @@ export abstract class Trinity {
 		_from: string,
 		_amount: BigNumber,
 	): BytesLike {
-		return this.interface.encodeFunctionData(
+		
+		let _calldata: string;
+		let _functionCalldata: any;
+
+		_functionCalldata = this.token_module_interface.encodeFunctionData(
 			"transferFrom(address,address,uint256)",
 			[_token, _from, _amount],
 		);
+		
+		_calldata = encodeAbiParameters(
+			parseAbiParameters('bytes1, bytes'),
+			[TOKEN_ACTIONS_MODULE_ID, _functionCalldata]
+		);
+
+		return _calldata;
 	}
 
 	public static transfer(
@@ -216,30 +251,30 @@ export abstract class Trinity {
 		_to: string,
 		_amount: BigNumber,
 	): BytesLike {
-		return this.interface.encodeFunctionData(
+		return this.token_module_interface.encodeFunctionData(
 			"transfer(address,address,uint256)",
 			[_token, _to, _amount],
 		);
 	}
 
 	public static depositSTETH(_amount: BigNumber): BytesLike {
-		return this.interface.encodeFunctionData("depositSTETH(uint256)", [
+		return this.token_module_interface.encodeFunctionData("depositSTETH(uint256)", [
 			_amount,
 		]);
 	}
 
 	public static depositWETH(_amount: BigNumber): BytesLike {
-		return this.interface.encodeFunctionData("depositWETH(uint256)", [_amount]);
+		return this.token_module_interface.encodeFunctionData("depositWETH(uint256)", [_amount]);
 	}
 
 	public static withdrawWETH(_amount: BigNumber): BytesLike {
-		return this.interface.encodeFunctionData("withdrawWETH(uint256)", [
+		return this.token_module_interface.encodeFunctionData("withdrawWETH(uint256)", [
 			_amount,
 		]);
 	}
 
 	public static balanceInOf(_token: string, _acc: string): BytesLike {
-		return this.interface.encodeFunctionData("balanceInOf(address,address)", [
+		return this.token_module_interface.encodeFunctionData("balanceInOf(address,address)", [
 			_token,
 			_acc,
 		]);
@@ -264,12 +299,12 @@ export abstract class Trinity {
 	}
 
 	private static _validateMarket(_market: string) {
-		if (_market !== MORPHO_COMPOUND && _market !== MORPHO_AAVE)
+		if (_market !== MORPHO_COMPOUND && _market !== MORPHO_AAVE && _market !== MORPHO_AAVE_V3)
 			throw new Error("INVALID_MARKET");
 	}
 
 	private static _validateAggregator(_aggregator: string) {
-		if (_aggregator !== AUGUSTUS && _aggregator !== INCH_ROUTER)
+		if (_aggregator !== ZERO_EX_ROUTER && _aggregator !== INCH_ROUTER)
 			throw new Error("INVALID_AGGREGATOR");
 	}
 }

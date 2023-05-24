@@ -1,5 +1,5 @@
 import { BigNumber } from "@ethersproject/bignumber";
-import { AUGUSTUS, FLASHLOAN, MORPHEUS, NEO } from "./constants";
+import { ZERO_EX_ROUTER, FLASHLOAN, MORPHEUS, NEO } from "./constants";
 import { Trinity } from "./trinity";
 import { ethers } from "ethers";
 import { MatrixData, Token } from "./types";
@@ -10,6 +10,7 @@ import {
 	getParaswapBuyPrices,
 } from "./exchange/paraswap";
 
+/// --- Class used for building tx calldatas 
 export abstract class Matrix {
 	////////////////////////////////////////////////////////////////
 	/// --- SIMPLE ACTIONS
@@ -24,6 +25,7 @@ export abstract class Matrix {
 		address: string,
 		smartWallet: string,
 		value: BigNumber,
+		argPos: number[],
 	): MatrixData {
 		const calldata = Trinity.multicall(
 			txDeadline,
@@ -31,6 +33,7 @@ export abstract class Matrix {
 				fromWallet ? Trinity.transferFrom(token.address, address, value) : "",
 				Trinity.supply(morphoMarketAddress, marketAddress, smartWallet, value),
 			].filter((i) => i !== ""),
+			argPos,
 		);
 
 		return {
@@ -54,6 +57,7 @@ export abstract class Matrix {
 				Trinity.borrow(morphoMarketAddress, marketAddress, value),
 				toWallet ? Trinity.transfer(token.address, address, value) : "",
 			].filter((i) => i !== ""),
+			[0]
 		);
 
 		return {
@@ -84,9 +88,10 @@ export abstract class Matrix {
 					[token.address],
 					txDeadline,
 					calls,
+					[0],
 					address,
 			  )
-			: Trinity.multicall(txDeadline, calls);
+			: Trinity.multicall(txDeadline, calls, [0]);
 
 		return {
 			to: toWallet ? NEO : MORPHEUS,
@@ -116,6 +121,7 @@ export abstract class Matrix {
 					max ? ethers.constants.MaxUint256 : value,
 				),
 			].filter((i) => i !== ""),
+			[0],
 		);
 
 		return {
@@ -159,6 +165,7 @@ export abstract class Matrix {
 					? Trinity.transfer(borrowToken.address, address, borrowValue)
 					: "",
 			].filter((i) => i !== ""),
+			[0]
 		);
 
 		return {
@@ -204,9 +211,10 @@ export abstract class Matrix {
 					[withdrawToken.address],
 					txDeadline,
 					calls,
+					[0],
 					address,
 			  )
-			: Trinity.multicall(txDeadline, calls);
+			: Trinity.multicall(txDeadline, calls, [0]);
 
 		return {
 			to: toWallet ? NEO : MORPHEUS,
@@ -351,7 +359,7 @@ export abstract class Matrix {
 				),
 				paybackMarketAddress !== withdrawMarketAddress
 					? Trinity.exchange(
-							AUGUSTUS,
+						ZERO_EX_ROUTER,
 							withdrawToken.address,
 							paybackToken.address,
 							ethers.constants.MaxUint256,

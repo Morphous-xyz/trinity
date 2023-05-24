@@ -1,4 +1,4 @@
-import { AUGUSTUS, INCH_ROUTER } from "../constants";
+import { ZERO_EX_ROUTER, INCH_ROUTER } from "../constants";
 import { formatUnits, parseUnits } from "ethers/lib/utils";
 
 import { buildOneInchData, getOneInchPrices } from "./oneInch";
@@ -18,7 +18,8 @@ export const getPrices = async (
 			: formatUnits(parseUnits(value, tokenIn.decimals), 0);
 		console.log("getPrices", formattedValue);
 		switch (aggregator) {
-			case AUGUSTUS:
+			// TODO : Use 0x
+			case ZERO_EX_ROUTER:
 				return await getParaswapPrices(tokenIn, tokenOut, formattedValue, true);
 			case INCH_ROUTER:
 				const price = await getOneInchPrices(
@@ -54,7 +55,8 @@ export const buildExchangeData = async (
 			: formatUnits(parseUnits(value, tokenIn.decimals), 0);
 		console.log("buildExchangeData", formattedValue);
 		switch (aggregator) {
-			case AUGUSTUS:
+			// TODO : Use 0x
+			case ZERO_EX_ROUTER:
 				return await buildParaswapData(
 					tokenIn,
 					tokenOut,

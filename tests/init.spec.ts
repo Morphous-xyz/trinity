@@ -16,6 +16,13 @@ const result = await readContract(testClient, {
 	args: [USDC],
 });
 
+const balance = await testClient.getBalance({ 
+	address: '0x14dbf58edc1a1f7910d5d59dc660fd0f263f3214',
+  })
+  
+
+
 test("should work as expected", () => {
 	console.log(result);
+	console.log(balance);
 });
