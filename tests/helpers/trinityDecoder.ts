@@ -26,12 +26,20 @@ export function decodeExecuteFlashloanWithReceiver(data: Hex): [Address[], Addre
 }
 
 
-/* TODO 
-export function decodeMulticallFlashloan(data: Hex): [Address, BigInt, Hex[]] {
 
-    const callData = Trinity.interface._abiCoder.decode("tuple(address target, bytes data)[]", data);
+export function decodeMulticallFlashloan(data: Hex): [Address, BigInt, any] {
+			
+    // _proxy, deadline, _calls
+    const callData = decodeAbiParameters(
+        parseAbiParameters('address, uint256, bytes[]'),
+        data
+    )
+
+    const [proxy, deadline, calls] = callData;
+
+    return [proxy, deadline, calls];
 }
-*/
+
 
 ////////////////////////////////////////////////////////////////
 /// --- MULTICALL

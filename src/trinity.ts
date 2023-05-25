@@ -56,6 +56,7 @@ export abstract class Trinity {
 		);
 	}
 
+	/// @notice Build the calldata for a multicall, to be called by the flashloan
 	public static multicallFlashloan(
 		_proxy: string,
 		_deadline: number,
