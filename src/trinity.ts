@@ -3,7 +3,7 @@ import MorpheusABI from "./abi/morpheus.json";
 import TokenActionsModuleABI from "./abi/tokenActionsModule.json";
 import AggregatorsModuleABI from "./abi/aggregatorsModule.json";
 import MorphoModuleABI from "./abi/morphoModule.json";
-import { Hex, encodeAbiParameters, parseAbiParameters } from "viem"
+import { Address, Hex, encodeAbiParameters, parseAbiParameters } from "viem"
 import { Interface } from "@ethersproject/abi";
 import { BytesLike } from "@ethersproject/bytes";
 import { BigNumber } from "@ethersproject/bignumber";
@@ -135,6 +135,54 @@ export abstract class Trinity {
 		return _calldata;
 	}
 
+
+	// function supply(address underlying, uint256 amount, address onBehalf, uint256 maxIterations)
+	public static supplyAaveV3(
+		_underlying: string,
+		_amount: BigNumber,
+		_onBehalf: string,
+		_maxIterations: BigNumber,
+	): BytesLike {
+		let _calldata: string;
+		let _functionCalldata: any;
+
+		_functionCalldata = this.morpho_module_interface.encodeFunctionData(
+			"supply(address,uint256,address,uint256)",
+			[_underlying, _amount, _onBehalf, _maxIterations],
+		);
+
+		_calldata = encodeAbiParameters(
+			parseAbiParameters('bytes1, bytes'),
+			[MORPHO_MODULE_ID, _functionCalldata]
+		);
+
+		return _calldata;
+	}
+
+	// function supplyCollateral(address underlying, uint256 amount, address onBehalf)
+	public static supplyCollateralAaveV3(
+		_underlying: string,
+		_amount: BigNumber,
+		_onBehalf: string,
+	): BytesLike {
+		let _calldata: string;
+		let _functionCalldata: any;
+
+		_functionCalldata = this.morpho_module_interface.encodeFunctionData(
+			"supplyCollateral(address,uint256,address)",
+			[_underlying, _amount, _onBehalf],
+		);
+
+		_calldata = encodeAbiParameters(
+			parseAbiParameters('bytes1, bytes'),
+			[MORPHO_MODULE_ID, _functionCalldata]
+		);
+
+		return _calldata;
+
+	}
+
+
 	// function withdraw(address _market, address _poolToken, uint256 _amount)
 	public static withdraw(
 		_market: string,
@@ -159,11 +207,59 @@ export abstract class Trinity {
 		return _calldata;
 	}
 
+	// function withdraw(address underlying, uint256 amount, address onBehalf, address receiver, uint256 maxIterations)
+	public static withdrawAaveV3(
+		_underlying: string,
+		_amount: BigNumber,
+		_onBehalf: string,
+		_receiver: string,
+		_maxIterations: BigNumber,
+	): BytesLike {
+		let _calldata: string;
+		let _functionCalldata: any;
+		
+		_functionCalldata = this.morpho_module_interface.encodeFunctionData(
+			"withdraw(address,uint256,address,address,uint256)",
+			[_underlying, _amount, _onBehalf, _receiver, _maxIterations],
+		);
+
+		_calldata = encodeAbiParameters(
+			parseAbiParameters('bytes1, bytes'),
+			[MORPHO_MODULE_ID, _functionCalldata]
+		);
+
+		return _calldata;
+	}
+
+	// function withdrawCollateral(address underlying, uint256 amount, address onBehalf, address receiver)
+	public static withdrawCollateralAaveV3(
+		_underlying: string,
+		_amount: BigNumber,
+		_onBehalf: string,
+		_receiver: string,
+	): BytesLike {
+		let _calldata: string;
+		let _functionCalldata: any;
+		
+		_functionCalldata = this.morpho_module_interface.encodeFunctionData(
+			"withdrawCollateral(address,uint256,address,address)",
+			[_underlying, _amount, _onBehalf, _receiver],
+		);
+
+		_calldata = encodeAbiParameters(
+			parseAbiParameters('bytes1, bytes'),
+			[MORPHO_MODULE_ID, _functionCalldata]
+		);
+
+		return _calldata;
+	}
+
 	////////////////////////////////////////////////////////////////
 	/// --- MORPHO BORROW/REPAY
 	///////////////////////////////////////////////////////////////
 
 	// function borrow(address _market, address _poolToken, uint256 _amount)
+	// function borrow(address _market, address _poolToken, uint256 _amount, uint256 _maxGasForMatching) 
 	public static borrow(
 		_market: string,
 		_poolToken: string,
@@ -187,6 +283,30 @@ export abstract class Trinity {
 				[_market, _poolToken, _amount, _maxGasForMatching],
 			);
 		}
+
+		_calldata = encodeAbiParameters(
+			parseAbiParameters('bytes1, bytes'),
+			[MORPHO_MODULE_ID, _functionCalldata]
+		);
+
+		return _calldata;
+	}
+
+	// function borrow(address underlying, uint256 amount, address onBehalf, address receiver, uint256 maxIterations)
+	public static borrowAaveV3(
+		_underlying: string,
+		_amount: BigNumber,
+		_onBehalf: string,
+		_receiver: string,
+		_maxIterations: BigNumber,
+	): BytesLike {
+		let _calldata: string;
+		let _functionCalldata: any;
+
+		_functionCalldata = this.morpho_module_interface.encodeFunctionData(
+			"borrow(address,uint256,address,address,uint256)",
+			[_underlying, _amount, _onBehalf, _receiver, _maxIterations],
+		);
 
 		_calldata = encodeAbiParameters(
 			parseAbiParameters('bytes1, bytes'),
@@ -220,6 +340,30 @@ export abstract class Trinity {
 
 		return _calldata;
 	}
+
+	// repay(address underlying, uint256 amount, address onBehalf)
+	public static repayAaveV3(
+		_underlying: Address,
+		_amount: BigNumber,
+		_onBehalf: Address,
+	): BytesLike {
+		let _calldata: string;
+		let _functionCalldata: any;
+
+
+		_functionCalldata = this.morpho_module_interface.encodeFunctionData(
+			"repay(address,uint256,address)",
+			[_underlying, _amount, _onBehalf],
+		);
+
+		_calldata = encodeAbiParameters(
+			parseAbiParameters('bytes1, bytes'),
+			[MORPHO_MODULE_ID, _functionCalldata]
+		);
+
+		return _calldata;
+	}
+
 
 	////////////////////////////////////////////////////////////////
 	/// --- MORPHO CLAIM REWARDS
@@ -261,6 +405,28 @@ export abstract class Trinity {
 			_market,
 			_poolTokens,
 			_tradeForMorphoToken,
+		]);
+
+		_calldata = encodeAbiParameters(
+			parseAbiParameters('bytes1, bytes'),
+			[MORPHO_MODULE_ID, _functionCalldata]
+		);
+
+		return _calldata;
+	}
+
+	//claim(address[] calldata assets, address onBehalf) // AAVE_V3
+	public static claimRewardsAaveV3(
+		_assets: Address[],
+		_onBehalf: Address,
+	): BytesLike {
+
+		let _calldata: string;
+		let _functionCalldata: any;
+
+		_functionCalldata = this.morpho_module_interface.encodeFunctionData("claim(address[],address)", [
+			_assets,
+			_onBehalf,
 		]);
 
 		_calldata = encodeAbiParameters(

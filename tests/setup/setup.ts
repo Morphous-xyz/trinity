@@ -2,7 +2,7 @@ import { FORK_BLOCK_NUMBER, FORK_URL } from "./global-setup";
 import { fetchLogs } from "@viem/anvil";
 import { afterAll, afterEach } from "vitest";
 
-import { localhost, mainnet } from "viem/chains";
+import { localhost, mainnet, foundry } from "viem/chains";
 import {
 	createPublicClient,
 	createTestClient,
@@ -10,18 +10,27 @@ import {
 	http,
 } from "viem";
 
+/*
 export const poolId = 1;
-
+*/
 export const anvil = {
 	...localhost,
 	id: 1,
 	contracts: mainnet.contracts,
 } as const;
 
-export const testClient = createPublicClient({
+/*
+export const publicClient = createPublicClient({
 	chain: anvil,
 	transport: http(`http://127.0.0.1:8545/${poolId}`),
 });
+*/
+
+export const testClient = createTestClient({
+	chain: foundry,
+	mode: 'anvil',
+	transport: http(),
+})
 
 afterEach((context) => {
 	// Print the last log entries from anvil after each test.
@@ -45,6 +54,6 @@ afterEach((context) => {
 				// rome-ignore lint/nursery/noConsoleLog: this is fine ...
 				console.log(...logs);
 			}
-		} catch {}
+		} catch { }
 	});
 });

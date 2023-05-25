@@ -28,7 +28,7 @@ export function decodeExecuteFlashloanWithReceiver(data: Hex): [Address[], Addre
 
 
 export function decodeMulticallFlashloan(data: Hex): [Address, BigInt, any] {
-			
+
     // _proxy, deadline, _calls
     const callData = decodeAbiParameters(
         parseAbiParameters('address, uint256, bytes[]'),
@@ -101,6 +101,67 @@ export function decodeSupplyWithoutMaxGas(data: Hex): [Hex, Address, Address, He
     return [moduleId, market, poolToken, onBehalf, amount];
 }
 
+export function decodeSupplyAaveV3(data: Hex): [Hex, Address, BigInt, Address, BigInt] {
+    const decodedData = decodeAbiParameters(
+        parseAbiParameters('bytes1, bytes'),
+        data
+    );
+
+    const [moduleId, functionCalldata] = decodedData;
+
+    const callData = Trinity.morpho_module_interface.decodeFunctionData("supply(address,uint256,address,uint256)", functionCalldata);
+
+    const [underlying, amount, onBehalf, maxIterations] = callData;
+
+    return [moduleId, underlying, amount, onBehalf, maxIterations];
+}
+
+export function decodeSupplyCollateralAaveV3(data: Hex): [Hex, Address, BigInt, Address] {
+    const decodedData = decodeAbiParameters(
+        parseAbiParameters('bytes1, bytes'),
+        data
+    );
+
+    const [moduleId, functionCalldata] = decodedData;
+
+    const callData = Trinity.morpho_module_interface.decodeFunctionData("supplyCollateral(address,uint256,address)", functionCalldata);
+
+    const [underlying, amount, onBehalf] = callData;
+
+    return [moduleId, underlying, amount, onBehalf];
+}
+
+export function decodeWithdrawAaveV3(data: Hex): [Hex, Address, BigInt, Address, Address, BigInt] {
+    const decodedData = decodeAbiParameters(
+        parseAbiParameters('bytes1, bytes'),
+        data
+    );
+
+    const [moduleId, functionCalldata] = decodedData;
+
+    const callData = Trinity.morpho_module_interface.decodeFunctionData("withdraw(address,uint256,address,address,uint256)", functionCalldata);
+
+    const [underlying, amount, onBehalf, receiver, maxIterations] = callData;
+
+    return [moduleId, underlying, amount, onBehalf, receiver, maxIterations];
+
+}
+
+export function decodeWithdrawCollateralAaveV3(data: Hex): [Hex, Address, BigInt, Address, Address] {
+    const decodedData = decodeAbiParameters(
+        parseAbiParameters('bytes1, bytes'),
+        data
+    );
+
+    const [moduleId, functionCalldata] = decodedData;
+
+    const callData = Trinity.morpho_module_interface.decodeFunctionData("withdrawCollateral(address,uint256,address,address)", functionCalldata);
+
+    const [underlying, amount, onBehalf, receiver] = callData;
+
+    return [moduleId, underlying, amount, onBehalf, receiver];
+
+}
 
 export function decodeWithdraw(data: Hex): [Hex, Address, Address, BigInt] {
     const decodedData = decodeAbiParameters(
@@ -150,6 +211,23 @@ export function decodeBorrowWithoutMaxGas(data: Hex): [Hex, Address, Address, Bi
     return [moduleId, market, poolToken, amount];
 }
 
+export function decodeBorrowWithReceiver(data: Hex): [Hex, Address, BigInt, Address, Address, BigInt] {
+
+    const decodedData = decodeAbiParameters(
+        parseAbiParameters('bytes1, bytes'),
+        data
+    );
+
+    const [moduleId, functionCalldata] = decodedData;
+
+    const callData = Trinity.morpho_module_interface.decodeFunctionData("borrow(address,uint256,address,address,uint256)", functionCalldata);
+
+    const [underlying, amount, onBehalf, receiver, maxIterations] = callData;
+
+    return [moduleId, underlying, amount, onBehalf, receiver, maxIterations];
+
+}
+
 export function decodeRepay(data: Hex): [Hex, Address, Address, Address, BigInt] {
     const decodedData = decodeAbiParameters(
         parseAbiParameters('bytes1, bytes'),
@@ -165,12 +243,24 @@ export function decodeRepay(data: Hex): [Hex, Address, Address, Address, BigInt]
     return [moduleId, market, poolToken, onBehalf, amount];
 }
 
+export function decodeRepayAaveV3(data: Hex): [Hex, Address, BigInt, Address] {
 
+    const decodedData = decodeAbiParameters(
+        parseAbiParameters('bytes1, bytes'),
+        data
+    );
+
+    const [moduleId, functionCalldata] = decodedData;
+    const callData = Trinity.morpho_module_interface.decodeFunctionData("repay(address,uint256,address)", functionCalldata);
+
+    const [underlying, amount, onBehalf] = callData;
+
+    return [moduleId, underlying, amount, onBehalf];
+
+}
 ////////////////////////////////////////////////////////////////
 /// --- MORPHO CLAIM REWARDS
 ///////////////////////////////////////////////////////////////
-
-
 
 export function decodeClaim(data: Hex): [Hex, Address, BigInt, Hex] {
     const decodedData = decodeAbiParameters(
@@ -202,6 +292,22 @@ export function decodeClaimRewards(data: Hex): [Hex, Address, Address[], Boolean
 
     return [moduleId, market, poolTokens, tradeForMorphoToken];
 }
+
+
+export function decodeClaimRewardsAaveV3(data: Hex): [Hex, Address, Address] {
+    const decodedData = decodeAbiParameters(
+        parseAbiParameters('bytes1, bytes'),
+        data
+    );
+
+    const [moduleId, functionCalldata] = decodedData;
+    const callData = Trinity.morpho_module_interface.decodeFunctionData("claim(address[],address)", functionCalldata);
+
+    const [underlying, onBehalf] = callData;
+
+    return [moduleId, underlying, onBehalf];
+}
+
 
 ////////////////////////////////////////////////////////////////
 /// --- TOKENS ACTIONS

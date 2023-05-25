@@ -70,7 +70,7 @@ test('multicallFlashloan should be encoded and decoded correctly', () => {
     const _poolToken = WETH_AAVE
     const _onBehalf = PROXY_TEST_ADDRESS
     const _amount = parseUnits('1', 18)
-    
+
     // encoding multiple actions
     const _calls = [
         Trinity.depositWETH(parseUnits('1', 18)),
@@ -142,6 +142,40 @@ test('supply should be encoded and decoded correctly', () => {
     expect(Number(decodedWithMaxGas[5])).toBe(Number(_maxGas))
 })
 
+test('supply (AaveV3) should be encoded and decoded correctly', () => {
+    const _underlying = DAI
+    const _amount = parseUnits('1', 18)
+    const _onBehalf = PROXY_TEST_ADDRESS
+    const _maxIterations = parseUnits('1', 1)
+
+    const calldata: any = Trinity.supplyAaveV3(_underlying, _amount, _onBehalf, _maxIterations)
+
+    const decoded = TrinityDecoder.decodeSupplyAaveV3(calldata)
+
+    expect(decoded[0]).toBe(MORPHO_MODULE_ID)
+    expect(decoded[1]).toBe(_underlying)
+    expect(Number(decoded[2])).toBe(Number(_amount))
+    expect(decoded[3]).toBe(_onBehalf)
+    expect(Number(decoded[4])).toBe(Number(_maxIterations))
+
+})
+
+test('supplyCollateral (AaveV3) should be encoded and decoded correctly', () => {
+    const _underlying = DAI
+    const _amount = parseUnits('1', 18)
+    const _onBehalf = PROXY_TEST_ADDRESS
+
+    const calldata: any = Trinity.supplyCollateralAaveV3(_underlying, _amount, _onBehalf)
+
+    const decoded = TrinityDecoder.decodeSupplyCollateralAaveV3(calldata)
+
+    expect(decoded[0]).toBe(MORPHO_MODULE_ID)
+    expect(decoded[1]).toBe(_underlying)
+    expect(Number(decoded[2])).toBe(Number(_amount))
+    expect(decoded[3]).toBe(_onBehalf)
+})
+
+
 test('withdraw should be encoded and decoded correctly', () => {
     const _market = MORPHO_AAVE
     const _poolToken = WETH_AAVE
@@ -155,6 +189,43 @@ test('withdraw should be encoded and decoded correctly', () => {
     expect(decoded[1]).toBe(_market)
     expect(decoded[2]).toBe(_poolToken)
     expect(Number(decoded[3])).toBe(Number(_amount))
+})
+
+test('withdraw (AaveV3) should be encoded and decoded correctly', () => {
+    const _underlying = DAI
+    const _amount = parseUnits('1', 18)
+    const _onBehalf = PROXY_TEST_ADDRESS
+    const _receiver = PROXY_TEST_ADDRESS
+    const _maxIterations = parseUnits('1', 1)
+
+    const calldata: any = Trinity.withdrawAaveV3(_underlying, _amount, _onBehalf, _receiver, _maxIterations)
+
+    const decoded = TrinityDecoder.decodeWithdrawAaveV3(calldata)
+
+    expect(decoded[0]).toBe(MORPHO_MODULE_ID)
+    expect(decoded[1]).toBe(_underlying)
+    expect(Number(decoded[2])).toBe(Number(_amount))
+    expect(decoded[3]).toBe(_onBehalf)
+    expect(decoded[4]).toBe(_receiver)
+    expect(Number(decoded[5])).toBe(Number(_maxIterations))
+
+})
+
+test('withdrawCollateral (AaveV3) should be encoded and decoded correctly', () => {
+    const _underlying = DAI
+    const _amount = parseUnits('1', 18)
+    const _onBehalf = PROXY_TEST_ADDRESS
+    const _receiver = PROXY_TEST_ADDRESS
+
+    const calldata: any = Trinity.withdrawCollateralAaveV3(_underlying, _amount, _onBehalf, _receiver)
+
+    const decoded = TrinityDecoder.decodeWithdrawCollateralAaveV3(calldata)
+
+    expect(decoded[0]).toBe(MORPHO_MODULE_ID)
+    expect(decoded[1]).toBe(_underlying)
+    expect(Number(decoded[2])).toBe(Number(_amount))
+    expect(decoded[3]).toBe(_onBehalf)
+    expect(decoded[4]).toBe(_receiver)
 })
 
 ////////////////////////////////////////////////////////////////
@@ -188,6 +259,25 @@ test('borrow should be encoded and decoded correctly', () => {
     expect(Number(decodedWithMaxGas[4])).toBe(Number(_maxGas))
 })
 
+test('borrow with receiver should be encoded and decoded correctly', () => {
+    const _underlying = WETH
+    const _amount = parseUnits('1', 18)
+    const _onBehalf = PROXY_TEST_ADDRESS
+    const _receiver = PROXY_TEST_ADDRESS
+    const _maxIterations = parseUnits('4', 0)
+
+    const calldata: any = Trinity.borrowAaveV3(_underlying, _amount, _onBehalf, _receiver, _maxIterations)
+
+    const decoded = TrinityDecoder.decodeBorrowWithReceiver(calldata)
+
+    expect(decoded[0]).toBe(MORPHO_MODULE_ID)
+    expect(decoded[1]).toBe(_underlying)
+    expect(Number(decoded[2])).toBe(Number(_amount))
+    expect(decoded[3]).toBe(_onBehalf)
+    expect(decoded[4]).toBe(_receiver)
+    expect(Number(decoded[5])).toBe(Number(_maxIterations))
+})
+
 test('repay should be encoded and decoded correctly', () => {
     const _market = MORPHO_AAVE
     const _poolToken = WETH_AAVE
@@ -203,6 +293,23 @@ test('repay should be encoded and decoded correctly', () => {
     expect(decoded[2]).toBe(_poolToken)
     expect(decoded[3]).toBe(_onBehalf)
     expect(Number(decoded[4])).toBe(Number(_amount))
+})
+
+
+test('repay (AaveV3) should be encoded and decoded correctly', () => {
+    const _underlying = WETH
+    const _amount = parseUnits('1', 18)
+    const _onBehalf = PROXY_TEST_ADDRESS
+
+    const calldata: any = Trinity.repayAaveV3(_underlying, _amount, _onBehalf)
+
+    const decoded = TrinityDecoder.decodeRepayAaveV3(calldata)
+
+    expect(decoded[0]).toBe(MORPHO_MODULE_ID)
+    expect(decoded[1]).toBe(_underlying)
+    expect(Number(decoded[2])).toBe(Number(_amount))
+    expect(decoded[3]).toBe(_onBehalf)
+
 })
 
 ////////////////////////////////////////////////////////////////
@@ -239,6 +346,19 @@ test('claim rewards should be encoded and decoded correctly', () => {
     expect(decoded[1]).toBe(_market)
     expect(decoded[2][0]).toBe(_poolTokens[0])
     expect(decoded[3]).toBe(_tradeForMorphoToken)
+})
+
+test('claim rewards (AaveV3) should be encoded and decoded correctly', () => {
+    const _assets = [getAddress(WETH)]
+    const _onBehalf = PROXY_TEST_ADDRESS
+
+    const calldata: any = Trinity.claimRewardsAaveV3(_assets, _onBehalf)
+
+    const decoded = TrinityDecoder.decodeClaimRewardsAaveV3(calldata)
+
+    expect(decoded[0]).toBe(MORPHO_MODULE_ID)
+    expect(decoded[1][0]).toBe(_assets[0])
+    expect(decoded[2]).toBe(_onBehalf)
 })
 
 ////////////////////////////////////////////////////////////////
