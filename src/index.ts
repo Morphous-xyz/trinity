@@ -1,5 +1,5 @@
 export * from "./trinity";
-export * from "./matrix";
+export * from "./actions";
 export * from "./constants";
 export * from "./exchange";
 

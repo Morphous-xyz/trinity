@@ -70,6 +70,7 @@ test('multicallFlashloan should be encoded and decoded correctly', () => {
     const _poolToken = WETH_AAVE
     const _onBehalf = PROXY_TEST_ADDRESS
     const _amount = parseUnits('1', 18)
+    const _argPos = [0, 1]
 
     // encoding multiple actions
     const _calls = [
@@ -77,13 +78,14 @@ test('multicallFlashloan should be encoded and decoded correctly', () => {
         Trinity.supply(_market, _poolToken, _onBehalf, _amount),
     ]
 
-    const calldata: any = Trinity.multicallFlashloan(_proxy, _deadline, _calls)
+    const calldata: any = Trinity.multicallFlashloan(_proxy, _deadline, _calls, _argPos)
 
     const decoded = TrinityDecoder.decodeMulticallFlashloan(calldata)
 
     expect(decoded[0]).toBe(_proxy)
     expect(Number(decoded[1])).toBe(Math.floor(Date.now() / 1000))
     expect(decoded[2]).toStrictEqual(_calls)
+    expect(decoded[3].map((x: any) => Number(x))).toStrictEqual(_argPos)
 });
 
 

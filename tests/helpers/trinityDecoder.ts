@@ -27,17 +27,17 @@ export function decodeExecuteFlashloanWithReceiver(data: Hex): [Address[], Addre
 
 
 
-export function decodeMulticallFlashloan(data: Hex): [Address, BigInt, any] {
+export function decodeMulticallFlashloan(data: Hex): [Address, BigInt, any, any] {
 
-    // _proxy, deadline, _calls
+    // _proxy, deadline, _calls, _argPos
     const callData = decodeAbiParameters(
-        parseAbiParameters('address, uint256, bytes[]'),
+        parseAbiParameters('address, uint256, bytes[], uint256[]'),
         data
     )
 
-    const [proxy, deadline, calls] = callData;
+    const [proxy, deadline, calls, argPos] = callData;
 
-    return [proxy, deadline, calls];
+    return [proxy, deadline, calls, argPos];
 }
 
 

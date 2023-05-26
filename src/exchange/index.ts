@@ -76,7 +76,7 @@ export const buildExchangeData = async (
 					true,
 				);
 			default:
-				return "";
+				throw new Error("Invalid aggregator");
 		}
 	}
 	return "";

@@ -61,11 +61,12 @@ export abstract class Trinity {
 		_proxy: string,
 		_deadline: number,
 		_calls: BytesLike[],
+		_argPos: number[],
 	): BytesLike {
 		const deadline = Math.floor(Date.now() / 1000) + _deadline;
 		return this.interface._abiCoder.encode(
-			["address", "uint256", "bytes[]"],
-			[_proxy, deadline, _calls],
+			["address", "uint256", "bytes[]", "uint256[]"],
+			[_proxy, deadline, _calls, _argPos],
 		);
 	}
 

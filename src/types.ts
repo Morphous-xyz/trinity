@@ -1,6 +1,6 @@
 import { BigNumber, BytesLike } from "ethers";
 
-export type MatrixData = {
+export type ActionsData = {
 	to: string;
 	data: BytesLike;
 	etherValue?: BigNumber;
