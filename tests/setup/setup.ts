@@ -1,42 +1,21 @@
 import { FORK_BLOCK_NUMBER, FORK_URL } from "./global-setup";
 import { fetchLogs } from "@viem/anvil";
+import { POOL_ID } from "utils/constants";
 import { afterAll, afterEach } from "vitest";
+import { testClient } from "../helpers/globals";
 
-import { localhost, mainnet, foundry } from "viem/chains";
-import {
-	createPublicClient,
-	createTestClient,
-	encodeFunctionData,
-	http,
-} from "viem";
-
-/*
-export const poolId = 1;
-*/
-export const anvil = {
-	...localhost,
-	id: 1,
-	contracts: mainnet.contracts,
-} as const;
-
-/*
-export const publicClient = createPublicClient({
-	chain: anvil,
-	transport: http(`http://127.0.0.1:8545/${poolId}`),
+afterAll(async () => {
+	await testClient.reset({
+		blockNumber: FORK_BLOCK_NUMBER,
+		jsonRpcUrl: FORK_URL,
+	});
 });
-*/
-
-export const testClient = createTestClient({
-	chain: foundry,
-	mode: 'anvil',
-	transport: http(),
-})
 
 afterEach((context) => {
 	// Print the last log entries from anvil after each test.
 	context.onTestFailed(async (result) => {
 		try {
-			const response = await fetchLogs("http://127.0.0.1:8545", poolId);
+			const response = await fetchLogs("http://127.0.0.1:8545", POOL_ID);
 			const logs = response.slice(-20);
 
 			if (logs.length === 0) {
