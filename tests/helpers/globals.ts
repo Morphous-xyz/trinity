@@ -2,8 +2,10 @@ import { localhost, mainnet, foundry } from "viem/chains";
 import {
     createPublicClient,
     createTestClient,
+    createWalletClient,
     encodeFunctionData,
     http,
+    custom
 } from "viem";
 import { POOL_ID } from "utils/constants";
 import type { Abi } from "abitype";
@@ -27,6 +29,11 @@ export const testClient = createTestClient({
     chain: foundry,
     mode: 'anvil',
     transport: http(`http://127.0.0.1:8545/${POOL_ID}`),
+})
+
+export const walletClient = createWalletClient({
+    chain: anvil,
+    transport: http(`http://127.0.0.1:8545/${POOL_ID}`)
 })
 
 // Copied from Enzyme Finance

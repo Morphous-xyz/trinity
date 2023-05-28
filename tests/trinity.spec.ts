@@ -15,38 +15,6 @@ import { getBalanceOf, transferToken, corruptToken } from 'helpers/erc20Helper'
 import { testClient } from 'helpers/globals'
 
 
-test.only('transfering a token', async () => {
-    const USDC = "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48"
-    const USDC_HOLDER = "0x7713974908Be4BEd47172370115e8b1219F4A5f0"
-    const recipient = getAddress('0x14dbf58edc1a1f7910d5d59dc660fd0f263f3214')
-
-    console.log(await getBalanceOf({ token: USDC, account: recipient }));
-
-    await testClient.impersonateAccount({
-        address: USDC_HOLDER,
-    });
-    
-    
-    const amount = BigInt("10")
-
-    await transferToken({
-        token: USDC,
-        account: USDC_HOLDER,
-        recipient: recipient,
-        amount: amount
-    })
-
-    console.log(await getBalanceOf({ token: USDC, account: recipient }));
-
-    await corruptToken({
-        token: USDC,
-        recipient: recipient,
-        amount: BigInt("999999999999")
-    })
-
-    console.log(await getBalanceOf({ token: USDC, account: recipient }));
-
-});
 
 ////////////////////////////////////////////////////////////////
 /// --- FLASHLOAN
