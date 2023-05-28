@@ -1,11 +1,11 @@
-// TODO : Put here utils / helpers SDK to do earn operations
-// TODO : Leveraged stETH-ETH position
 // TODO : Leveraged DAI position
+// TODO : Leveraged AAVE V3 stETH position
 
 import { BigNumber, BytesLike } from "ethers";
-import { WETH, aWETH, MORPHO_AAVE, aSTETH, FLASHLOAN } from "./constants";
+import { WETH, aWETH, MORPHO_AAVE, aSTETH, FLASHLOAN, ZERO_EX_ROUTER } from "./constants";
 import { Trinity } from "trinity";
 import { Actions } from "actions";
+import { ActionsData } from "types";
 
 // --- Class used for building tx calldatas for strategies (Earn)
 /// - Using Actions 
@@ -21,22 +21,6 @@ export abstract class Earn {
 
     public static stETH_ETH_Leverage_AaveV2(inputWrapped: boolean, smartWallet: string, txDeadline: number, amount: BigNumber): BytesLike {
 
-        /*
-        const callData = Actions.leverage(
-            MORPHO_AAVE,
-            txDeadline,
-            fromWallet,
-            aSTETH,
-            aWETH,
-            WETH,
-            WETH,
-            smartWallet,
-            smartWallet,
-            amount,
-            flashloanValue,
-
-            */
-
         const flashloanValue = amount.mul(2)
         const totalValue = amount.mul(3)
 
@@ -51,7 +35,7 @@ export abstract class Earn {
                 Trinity.borrow(MORPHO_AAVE, aWETH, flashloanValue), // Borrow aWETH from AaveV2
                 Trinity.transfer(WETH, FLASHLOAN, flashloanValue), // Repay flashloan
             ],
-            [0,0,0,0,0,0] // TODO : good argPos
+            [0, 0, 0, 0, 0, 0] // TODO : good argPos
         )
 
         // Flashloan WETH and executing actions
@@ -61,28 +45,35 @@ export abstract class Earn {
             actionsCallData,
             false,
         )
-
     }
 
 
-    public static stETH_ETH_Deleverage_AaveV2(inputWrapped: boolean, smartWallet: string, txDeadline: number, amount: BigNumber): BytesLike {
-
-        // Flash borrow WETH
-
-        // Repay WETH
-
-        // Withdraw stETH
-
-        // Sell stETH for WETH
-
-        // Pay flashloan
-
-        // Unwrap WETH
-
-        const actionsCallData = 
+    public static async stETH_ETH_Deleverage_AaveV2(from: string, toWallet: boolean, txDeadline: number, paybackValue: BigNumber, withdrawValue: BigNumber, slippage: number, smartWallet?: string): ActionsData {
+      return await Actions.deleverage(
+            MORPHO_AAVE,
+            txDeadline,
+            toWallet,
+            aWETH,
+            aSTETH,
+            {
+                address: WETH,
+                name: "",
+                symbol: "",
+                decimals: 18
+            },
+            {
+                address: WETH,
+                name: "",
+                symbol: "",
+                decimals: 18
+            },
+            from,
+            smartWallet ? smartWallet : "",
+            paybackValue,
+            withdrawValue,
+            slippage,
+            false,
+            [0, 0, 0, 0, 0, 0]
+        )
     }
-
-
-
-
 }
