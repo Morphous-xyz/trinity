@@ -1,5 +1,5 @@
 import { expect, test } from "vitest";
-import { getAddress, toHex } from "viem";
+import { encodeAbiParameters, getAddress, parseAbiParameters, toHex } from "viem";
 import { Trinity } from "../src/trinity";
 import { DAI, PROXY_TEST_ADDRESS, WETH, WETH_AAVE } from "./utils/constants";
 import { parseUnits } from "ethers/lib/utils";
@@ -29,8 +29,6 @@ test("executeFlashloan should be encoded and decoded correctly", () => {
 		_data,
 		_isAave,
 	);
-
-	registerFixture("_EXECUTE_FLASHLOAN", calldata, "0");
 
 	const decoded = TrinityDecoder.decodeExecuteFlashloan(calldata);
 
@@ -120,7 +118,7 @@ test("multicall should be encoded and decoded correctly", () => {
 	expect(decoded[2].map((x: any) => Number(x))).toStrictEqual(_argPos);
 });
 
-test("multicallWithReceiver should be encoded and decoded correctly", () => {});
+test("multicallWithReceiver should be encoded and decoded correctly", () => { });
 
 ////////////////////////////////////////////////////////////////
 /// --- MORPHO SUPPLY/WITHDRAW

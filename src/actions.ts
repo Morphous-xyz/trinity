@@ -18,6 +18,7 @@ export abstract class Actions {
 	///////////////////////////////////////////////////////////////
 
 	public static deposit(
+		aaveV3: boolean,
 		morphoMarketAddress: string,
 		txDeadline: number,
 		fromWallet: boolean,
@@ -27,12 +28,14 @@ export abstract class Actions {
 		smartWallet: string,
 		value: BigNumber,
 		argPos: number[],
+		maxIterations?: BigNumber,
 	): ActionsData {
 		const calldata = Trinity.multicall(
 			txDeadline,
 			[
 				fromWallet ? Trinity.transferFrom(token.address, address, value) : "",
-				Trinity.supply(morphoMarketAddress, marketAddress, smartWallet, value),
+				aaveV3 ? Trinity.supplyAaveV3(morphoMarketAddress, value, smartWallet, maxIterations ? maxIterations : parseUnits("4")) :
+					Trinity.supply(morphoMarketAddress, marketAddress, smartWallet, value),
 			].filter((i) => i !== ""),
 			argPos,
 		);
@@ -86,12 +89,12 @@ export abstract class Actions {
 		];
 		const calldata = toWallet
 			? Trinity.multicallWithReceiver(
-					[token.address],
-					txDeadline,
-					calls,
-					[0],
-					address,
-			  )
+				[token.address],
+				txDeadline,
+				calls,
+				[0],
+				address,
+			)
 			: Trinity.multicall(txDeadline, calls, [0]);
 
 		return {
@@ -209,12 +212,12 @@ export abstract class Actions {
 		].filter((i) => i !== "");
 		const calldata = toWallet
 			? Trinity.multicallWithReceiver(
-					[withdrawToken.address],
-					txDeadline,
-					calls,
-					[0],
-					address,
-			  )
+				[withdrawToken.address],
+				txDeadline,
+				calls,
+				[0],
+				address,
+			)
 			: Trinity.multicall(txDeadline, calls, [0]);
 
 		return {
@@ -267,19 +270,19 @@ export abstract class Actions {
 			[
 				fromWallet
 					? Trinity.transferFrom(
-							collateralToken.address,
-							address,
-							collateralValue,
-					  )
+						collateralToken.address,
+						address,
+						collateralValue,
+					)
 					: "",
 				collateralMarketAddress !== debtMarketAddress
 					? Trinity.exchange(
-							aggregator,
-							debtToken.address,
-							collateralToken.address,
-							debtValue,
-							exchangeCalldata,
-					  )
+						aggregator,
+						debtToken.address,
+						collateralToken.address,
+						debtValue,
+						exchangeCalldata,
+					)
 					: "",
 				Trinity.supply(
 					morphoMarketAddress,
@@ -333,21 +336,21 @@ export abstract class Actions {
 		const paraswapRoute =
 			paybackMarketAddress !== withdrawMarketAddress
 				? await getParaswapBuyPrices(
-						withdrawToken,
-						paybackToken,
-						formatUnits(paybackValue, 0),
-				  )
+					withdrawToken,
+					paybackToken,
+					formatUnits(paybackValue, 0),
+				)
 				: {};
 		const paraswapCalldata =
 			paybackMarketAddress !== withdrawMarketAddress
 				? await buildParaswapBuyData(
-						withdrawToken,
-						paybackToken,
-						formatUnits(paybackValue, 0),
-						paraswapRoute,
-						slippage,
-						smartWallet,
-				  )
+					withdrawToken,
+					paybackToken,
+					formatUnits(paybackValue, 0),
+					paraswapRoute,
+					slippage,
+					smartWallet,
+				)
 				: "";
 
 		const actionsCallData = Trinity.multicallFlashloan(
@@ -367,12 +370,12 @@ export abstract class Actions {
 				),
 				paybackMarketAddress !== withdrawMarketAddress
 					? Trinity.exchange(
-							ZERO_EX_ROUTER,
-							withdrawToken.address,
-							paybackToken.address,
-							ethers.constants.MaxUint256,
-							paraswapCalldata,
-					  )
+						ZERO_EX_ROUTER,
+						withdrawToken.address,
+						paybackToken.address,
+						ethers.constants.MaxUint256,
+						paraswapCalldata,
+					)
 					: "",
 				Trinity.transfer(paybackToken.address, FLASHLOAN, flashloanAmount),
 			].filter((i) => i !== ""),
@@ -384,19 +387,19 @@ export abstract class Actions {
 
 		const calldata = toWallet
 			? Trinity.executeFlashloanWithReceiver(
-					[withdrawToken.address],
-					[paybackToken.address],
-					[flashloanAmount],
-					actionsCallData,
-					address,
-					false,
-			  )
+				[withdrawToken.address],
+				[paybackToken.address],
+				[flashloanAmount],
+				actionsCallData,
+				address,
+				false,
+			)
 			: Trinity.executeFlashloan(
-					[paybackToken.address],
-					[flashloanAmount],
-					actionsCallData,
-					false,
-			  );
+				[paybackToken.address],
+				[flashloanAmount],
+				actionsCallData,
+				false,
+			);
 
 		return {
 			to: NEO,
