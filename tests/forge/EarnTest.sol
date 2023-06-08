@@ -262,7 +262,7 @@ contract EarnTest is BaseTest {
     function test_leverage_aaveV2() public {
         MethodParameters memory params = readFixture(json, "._AAVE_V2_LEVERAGE");
 
-        deal(Constants._WETH, address(proxy), 1e18);
+        deal(Constants._WETH, address(proxy), 2e18);
         deal(address(proxy), 1e18);
 
         vm.prank(_proxyOwner);

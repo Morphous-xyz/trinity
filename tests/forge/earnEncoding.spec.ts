@@ -281,7 +281,7 @@ test("preparing calldata for AAVE_V2 leverage", async () => {
     const _debtToken : Token = { address: WETH, name: "WETH", symbol: "WETH", decimals: 18 };
     const _onBehalf = PROXY_TEST_ADDRESS;
 
-    const _collateralAmount = parseUnits("1", 18);
+    const _collateralAmount = parseUnits("2", 18);
     const _debtAmount = parseUnits("1", 18);
     const _deadline: any = 15;
 
