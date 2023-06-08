@@ -21,7 +21,7 @@ export const getPrices = async (
 			// TODO : Use 0x
 			case ZERO_EX_ROUTER:
 				return await getParaswapPrices(tokenIn, tokenOut, formattedValue, true);
-			case INCH_ROUTER:
+			case INCH_ROUTER: {
 				const price = await getOneInchPrices(
 					tokenIn,
 					tokenOut,
@@ -32,6 +32,7 @@ export const getPrices = async (
 					...price,
 					destAmount: price["toTokenAmount"],
 				};
+			}
 			default:
 				return {};
 		}

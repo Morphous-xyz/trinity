@@ -17,8 +17,7 @@ export abstract class Actions {
 	/// --- SIMPLE ACTIONS
 	///////////////////////////////////////////////////////////////
 
-	public static deposit(
-		aaveV3: boolean,
+	public static depositV2(
 		morphoMarketAddress: string,
 		txDeadline: number,
 		fromWallet: boolean,
@@ -27,17 +26,41 @@ export abstract class Actions {
 		address: string,
 		smartWallet: string,
 		value: BigNumber,
-		argPos: number[],
+	): ActionsData {
+		const calldata = Trinity.multicall(
+			txDeadline,
+			[
+				fromWallet ? Trinity.transferFrom(token.address, address, value) : "",
+
+				Trinity.supply(morphoMarketAddress, marketAddress, smartWallet, value),
+			].filter((i) => i !== ""),
+			fromWallet ? [0, 0] : [0],
+		);
+
+		return {
+			to: MORPHEUS,
+			data: calldata,
+		};
+	}
+
+
+	public static depositV3(
+		underlying: string,
+		txDeadline: number,
+		fromWallet: boolean,
+		token: Token,
+		address: string,
+		smartWallet: string,
+		value: BigNumber,
 		maxIterations?: BigNumber,
 	): ActionsData {
 		const calldata = Trinity.multicall(
 			txDeadline,
 			[
 				fromWallet ? Trinity.transferFrom(token.address, address, value) : "",
-				aaveV3 ? Trinity.supplyAaveV3(morphoMarketAddress, value, smartWallet, maxIterations ? maxIterations : parseUnits("4")) :
-					Trinity.supply(morphoMarketAddress, marketAddress, smartWallet, value),
+				Trinity.supplyAaveV3(underlying, value, smartWallet, maxIterations ? maxIterations : parseUnits("4"))
 			].filter((i) => i !== ""),
-			argPos,
+			fromWallet ? [0, 0] : [0],
 		);
 
 		return {
@@ -70,38 +93,75 @@ export abstract class Actions {
 		};
 	}
 
-	public static withdraw(
+	public static withdrawV2(
 		morphoMarketAddress: string,
 		txDeadline: number,
 		toWallet: boolean,
 		marketAddress: string,
-		token: Token,
+		tokens: string[],
 		address: string,
 		value: BigNumber,
 		max: boolean,
 	): ActionsData {
-		const calls = [
-			Trinity.withdraw(
-				morphoMarketAddress,
-				marketAddress,
-				max ? ethers.constants.MaxUint256 : value,
-			),
-		];
+		const calls = [Trinity.withdraw(
+			morphoMarketAddress,
+			marketAddress,
+			max ? ethers.constants.MaxUint256 : value
+		)];
+
 		const calldata = toWallet
 			? Trinity.multicallWithReceiver(
-				[token.address],
+				tokens,
 				txDeadline,
 				calls,
 				[0],
-				address,
+				address
 			)
 			: Trinity.multicall(txDeadline, calls, [0]);
 
 		return {
-			to: toWallet ? NEO : MORPHEUS,
+			to: MORPHEUS,
 			data: calldata,
 		};
 	}
+
+
+	public static withdrawV3(
+		underlying: string,
+		txDeadline: number,
+		toWallet: boolean,
+		tokens: string[],
+		address: string,
+		receiver: string,
+		value: BigNumber,
+		maxIterations?: BigNumber,
+	): ActionsData {
+		const calls = [
+			Trinity.withdrawAaveV3(
+				underlying,
+				value,
+				address,
+				receiver,
+				maxIterations ?? parseUnits("4")
+			)
+		];
+
+		const calldata = toWallet
+			? Trinity.multicallWithReceiver(
+				tokens,
+				txDeadline,
+				calls,
+				[0],
+				receiver
+			)
+			: Trinity.multicall(txDeadline, calls, [0]);
+
+		return {
+			to: MORPHEUS,
+			data: calldata,
+		};
+	}
+
 
 	public static repay(
 		morphoMarketAddress: string,
@@ -113,6 +173,7 @@ export abstract class Actions {
 		smartWallet: string,
 		value: BigNumber,
 		max: boolean,
+		argPos?: number
 	): ActionsData {
 		const calldata = Trinity.multicall(
 			txDeadline,
@@ -125,7 +186,7 @@ export abstract class Actions {
 					max ? ethers.constants.MaxUint256 : value,
 				),
 			].filter((i) => i !== ""),
-			[0],
+			argPos ? [argPos] : [0],
 		);
 
 		return {
@@ -138,15 +199,15 @@ export abstract class Actions {
 	/// --- DOUBLE ACTIONS
 	///////////////////////////////////////////////////////////////
 
-	public static depositBorrow(
+	public static depositBorrowV2(
 		morphoMarketAddress: string,
 		txDeadline: number,
 		fromWallet: boolean,
 		toWallet: boolean,
-		supplyMarketAddress: any,
-		borrowMarketAddress: any,
-		supplyToken: Token,
-		borrowToken: Token,
+		supplyMarketAddress: string,
+		borrowMarketAddress: string,
+		supplyToken: string,
+		borrowToken: string,
 		address: string,
 		smartWallet: string,
 		supplyValue: BigNumber,
@@ -156,7 +217,7 @@ export abstract class Actions {
 			txDeadline,
 			[
 				fromWallet
-					? Trinity.transferFrom(supplyToken.address, address, supplyValue)
+					? Trinity.transferFrom(supplyToken, address, supplyValue)
 					: "",
 				Trinity.supply(
 					morphoMarketAddress,
@@ -166,10 +227,10 @@ export abstract class Actions {
 				),
 				Trinity.borrow(morphoMarketAddress, borrowMarketAddress, borrowValue),
 				toWallet
-					? Trinity.transfer(borrowToken.address, address, borrowValue)
+					? Trinity.transfer(borrowToken, address, borrowValue)
 					: "",
 			].filter((i) => i !== ""),
-			[0],
+			fromWallet ? [0, 0, 0] : [0, 0],
 		);
 
 		return {
@@ -178,15 +239,48 @@ export abstract class Actions {
 		};
 	}
 
-	public static paybackWithdraw(
+	public static depositCollateralBorrowV3(
+		txDeadline: number,
+		fromWallet: boolean,
+		toWallet: boolean,
+		supplyToken: string,
+		borrowToken: string,
+		address: string,
+		smartWallet: string,
+		supplyValue: BigNumber,
+		borrowValue: BigNumber,
+		maxIterations?: BigNumber,
+	): ActionsData {
+		const calldata = Trinity.multicall(
+			txDeadline,
+			[
+				fromWallet
+					? Trinity.transferFrom(supplyToken, address, supplyValue)
+					: "",
+				Trinity.supplyCollateralAaveV3(supplyToken, supplyValue, address),
+				Trinity.borrowAaveV3(borrowToken, borrowValue, address, toWallet ? smartWallet : address, maxIterations ? maxIterations : parseUnits("4")),
+				toWallet
+					? Trinity.transfer(borrowToken, address, borrowValue)
+					: "",
+			].filter((i) => i !== ""),
+			fromWallet ? [0, 0, 0] : [0, 0],
+		);
+
+		return {
+			to: MORPHEUS,
+			data: calldata,
+		};
+	}
+
+	public static paybackWithdrawV2(
 		morphoMarketAddress: string,
 		txDeadline: number,
 		fromWallet: boolean,
 		toWallet: boolean,
 		paybackMarketAddress: any,
 		withdrawMarketAddress: any,
-		paybackToken: Token,
-		withdrawToken: Token,
+		paybackToken: string,
+		withdrawToken: string,
 		address: string,
 		smartWallet: string,
 		paybackValue: BigNumber,
@@ -196,7 +290,7 @@ export abstract class Actions {
 	): ActionsData {
 		const calls = [
 			fromWallet
-				? Trinity.transferFrom(paybackToken.address, address, paybackValue)
+				? Trinity.transferFrom(paybackToken, address, paybackValue)
 				: "",
 			Trinity.repay(
 				morphoMarketAddress,
@@ -212,13 +306,60 @@ export abstract class Actions {
 		].filter((i) => i !== "");
 		const calldata = toWallet
 			? Trinity.multicallWithReceiver(
-				[withdrawToken.address],
+				[withdrawToken],
 				txDeadline,
 				calls,
-				[0],
+				fromWallet ? [0, 0, 0] : [0, 0],
 				address,
 			)
-			: Trinity.multicall(txDeadline, calls, [0]);
+			: Trinity.multicall(txDeadline, calls, fromWallet ? [0, 0, 0] : [0, 0]);
+
+		return {
+			to: toWallet ? NEO : MORPHEUS,
+			data: calldata,
+		};
+	}
+
+	public static paybackWithdrawCollateralV3(
+		txDeadline: number,
+		fromWallet: boolean,
+		toWallet: boolean,
+		paybackToken: string,
+		withdrawToken: string,
+		address: string,
+		smartWallet: string,
+		paybackValue: BigNumber,
+		withdrawValue: BigNumber,
+		maxPayback: boolean,
+		maxWithdraw: boolean,
+		maxIterations?: BigNumber,
+	): ActionsData {
+		const calls = [
+			fromWallet
+				? Trinity.transferFrom(paybackToken, address, paybackValue)
+				: "",
+			Trinity.repayAaveV3(
+				paybackToken,
+				maxPayback ? ethers.constants.MaxUint256 : paybackValue,
+				address,
+			),
+			Trinity.withdrawCollateralAaveV3(
+				withdrawToken,
+				maxWithdraw ? ethers.constants.MaxUint256 : withdrawValue,
+				address,
+				toWallet ? smartWallet : address,
+			),
+		].filter((i) => i !== "");
+
+		const calldata = toWallet
+			? Trinity.multicallWithReceiver(
+				[withdrawToken],
+				txDeadline,
+				calls,
+				fromWallet ? [0, 0, 0] : [0, 0],
+				address,
+			)
+			: Trinity.multicall(txDeadline, calls, fromWallet ? [0, 0, 0] : [0, 0]);
 
 		return {
 			to: toWallet ? NEO : MORPHEUS,
@@ -230,7 +371,7 @@ export abstract class Actions {
 	/// --- LEVERAGE
 	///////////////////////////////////////////////////////////////
 
-	public static async leverage(
+	public static async leverageV2(
 		morphoMarketAddress: string,
 		txDeadline: number,
 		fromWallet: boolean,
@@ -244,7 +385,6 @@ export abstract class Actions {
 		debtValue: BigNumber,
 		aggregator: string,
 		slippage: number,
-		argPosForMulticall: number[],
 	): Promise<ActionsData> {
 		const exchangeRoute = await getPrices(
 			aggregator,
@@ -263,6 +403,24 @@ export abstract class Actions {
 			smartWallet,
 			true,
 		);
+
+		let argPos: number[];
+
+		switch (true) {
+			case fromWallet && (collateralMarketAddress !== debtMarketAddress):
+				argPos = [0, 0, 4, 0, 0]; // .supply[4] = Amount, getted from .exchange
+				break;
+			case fromWallet:
+				argPos = [0, 0, 0, 0];
+				break;
+			case collateralMarketAddress !== debtMarketAddress:
+				argPos = [0, 4, 0, 0];  // .supply[4] = Amount, getted from .exchange
+				break;
+			default:
+				argPos = [0, 0, 0];
+				break;
+		}
+
 
 		const actionsCallData = Trinity.multicallFlashloan(
 			smartWallet,
@@ -292,16 +450,13 @@ export abstract class Actions {
 						collateralMarketAddress !== debtMarketAddress
 							? parseUnits(exchangeRoute["destAmount"], 0)
 							: debtValue,
-					),
+					), // TODO : Check if necessary with new argPos structure
 				),
 				Trinity.borrow(morphoMarketAddress, debtMarketAddress, debtValue),
 				Trinity.transfer(debtToken.address, FLASHLOAN, debtValue),
 			].filter((i) => i !== ""),
-			argPosForMulticall,
+			argPos,
 		);
-
-		if (actionsCallData.length != argPosForMulticall.length)
-			throw new Error("Wrong argPosForMulticall");
 
 		const calldata = Trinity.executeFlashloan(
 			[debtToken.address],
@@ -316,7 +471,7 @@ export abstract class Actions {
 		};
 	}
 
-	public static async deleverage(
+	public static async deleverageV2(
 		morphoMarketAddress: string,
 		txDeadline: number,
 		toWallet: boolean,

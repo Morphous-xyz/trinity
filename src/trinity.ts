@@ -122,6 +122,8 @@ export abstract class Trinity {
 		let _calldata: string;
 		let _functionCalldata: any;
 
+		console.log("supply", _market, _poolToken, _onBehalf, Number(_amount));
+
 		if (_maxGasForMatching.eq(BigNumber.from(0))) {
 			_functionCalldata = this.morpho_module_interface.encodeFunctionData(
 				"supply(address,address,address,uint256)",
@@ -275,6 +277,8 @@ export abstract class Trinity {
 		let _calldata: string;
 		let _functionCalldata: any;
 
+		console.log("borrow", _market, _poolToken, Number(_amount));
+
 		if (_maxGasForMatching.eq(BigNumber.from(0))) {
 			_functionCalldata = this.morpho_module_interface.encodeFunctionData(
 				"borrow(address,address,uint256)",
@@ -345,9 +349,9 @@ export abstract class Trinity {
 
 	// repay(address underlying, uint256 amount, address onBehalf)
 	public static repayAaveV3(
-		_underlying: Address,
+		_underlying: string,
 		_amount: BigNumber,
-		_onBehalf: Address,
+		_onBehalf: string,
 	): BytesLike {
 		let _calldata: string;
 		let _functionCalldata: any;
@@ -465,6 +469,8 @@ export abstract class Trinity {
 		let _calldata: string;
 		let _functionCalldata: any;
 
+		console.log("transferFrom", _token, _from, _amount);
+
 		_functionCalldata = this.token_module_interface.encodeFunctionData(
 			"transferFrom(address,address,uint256)",
 			[_token, _from, _amount],
@@ -485,6 +491,8 @@ export abstract class Trinity {
 	): BytesLike {
 		let _calldata: string;
 		let _functionCalldata: any;
+
+		console.log("transfer", _token, _to, Number(_amount));
 
 		_functionCalldata = this.token_module_interface.encodeFunctionData(
 			"transfer(address,address,uint256)",
@@ -582,6 +590,8 @@ export abstract class Trinity {
 
 		let _calldata: string;
 		let _functionCalldata: any;
+
+		console.log("exchange", aggregator, srcToken, destToken, underlyingAmount);
 
 		_functionCalldata = this.aggregators_module_interface.encodeFunctionData(
 			"exchange(address,address,address,uint256,bytes)",
