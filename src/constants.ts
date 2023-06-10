@@ -10,6 +10,7 @@ export const ZERO_EX_ROUTER = "0xDef1C0ded9bec7F1a1670819833240f027b25EfF";
 export const INCH_ROUTER = "0x1111111254EEB25477B68fb85Ed929f73A960582";
 
 export const PARASWAP_API_URL = "https://apiv5.paraswap.io";
+export const ZERO_EX_API_URL = "https://api.0x.org";
 export const ONE_INCH_API_URL = "https://api.1inch.io/v5.0/1";
 
 ////////////////////////////////////////////////////////////////

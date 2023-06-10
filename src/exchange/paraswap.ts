@@ -10,6 +10,10 @@ export async function getParaswapPrices(
 	amount: string,
 	formated?: boolean,
 ) {
+	console.log("getParaswapPrices", amount)
+	console.log(`tokenIn ${tokenIn.address} ${tokenIn.decimals}`)
+	console.log(`tokenOut ${tokenOut.address} ${tokenOut.decimals}`)
+	
 	const queryParams = {
 		srcToken: tokenIn.address,
 		destToken: tokenOut.address,

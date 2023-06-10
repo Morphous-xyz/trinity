@@ -122,8 +122,6 @@ export abstract class Trinity {
 		let _calldata: string;
 		let _functionCalldata: any;
 
-		console.log("supply", _market, _poolToken, _onBehalf, Number(_amount));
-
 		if (_maxGasForMatching.eq(BigNumber.from(0))) {
 			_functionCalldata = this.morpho_module_interface.encodeFunctionData(
 				"supply(address,address,address,uint256)",
@@ -276,8 +274,6 @@ export abstract class Trinity {
 
 		let _calldata: string;
 		let _functionCalldata: any;
-
-		console.log("borrow", _market, _poolToken, Number(_amount));
 
 		if (_maxGasForMatching.eq(BigNumber.from(0))) {
 			_functionCalldata = this.morpho_module_interface.encodeFunctionData(
@@ -469,8 +465,6 @@ export abstract class Trinity {
 		let _calldata: string;
 		let _functionCalldata: any;
 
-		console.log("transferFrom", _token, _from, _amount);
-
 		_functionCalldata = this.token_module_interface.encodeFunctionData(
 			"transferFrom(address,address,uint256)",
 			[_token, _from, _amount],
@@ -492,8 +486,6 @@ export abstract class Trinity {
 		let _calldata: string;
 		let _functionCalldata: any;
 
-		console.log("transfer", _token, _to, Number(_amount));
-
 		_functionCalldata = this.token_module_interface.encodeFunctionData(
 			"transfer(address,address,uint256)",
 			[_token, _to, _amount],
@@ -502,7 +494,7 @@ export abstract class Trinity {
 		_calldata = encodeAbiParameters(parseAbiParameters("bytes1, bytes"), [
 			TOKEN_ACTIONS_MODULE_ID,
 			_functionCalldata,
-		]);
+		]);		
 
 		return _calldata;
 	}
@@ -590,8 +582,6 @@ export abstract class Trinity {
 
 		let _calldata: string;
 		let _functionCalldata: any;
-
-		console.log("exchange", aggregator, srcToken, destToken, underlyingAmount);
 
 		_functionCalldata = this.aggregators_module_interface.encodeFunctionData(
 			"exchange(address,address,address,uint256,bytes)",

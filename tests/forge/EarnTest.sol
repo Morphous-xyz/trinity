@@ -269,6 +269,17 @@ contract EarnTest is BaseTest {
         proxy.execute{value: params.value}(_NEO, params.data);
     }
 
+    function test_leverage_aaveV3() public {
+        MethodParameters memory params = readFixture(json, "._AAVE_V3_LEVERAGE");
+
+        deal(Constants._DAI, address(proxy), 1e24);
+        deal(address(proxy), 1e18);
+
+        vm.prank(_proxyOwner);
+
+        proxy.execute{value: params.value}(_NEO, params.data);
+    }
+
     ////////////////////////////////////////////////////////////////
     /// --- Deleverage / Unwind
     ///////////////////////////////////////////////////////////////

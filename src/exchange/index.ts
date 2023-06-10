@@ -2,7 +2,8 @@ import { ZERO_EX_ROUTER, INCH_ROUTER } from "../constants";
 import { formatUnits, parseUnits } from "ethers/lib/utils";
 
 import { buildOneInchData, getOneInchPrices } from "./oneInch";
-import { buildParaswapData, getParaswapPrices } from "./paraswap";
+import { /*buildParaswapData,*/ getParaswapPrices } from "./paraswap";
+import { buildZeroExData } from "./zeroEx";
 import { Token } from "types";
 
 export const getPrices = async (
@@ -45,7 +46,6 @@ export const buildExchangeData = async (
 	tokenIn: Token,
 	tokenOut: Token,
 	value: string,
-	route: any,
 	slippage: number,
 	user: string,
 	formatted?: boolean,
@@ -56,9 +56,14 @@ export const buildExchangeData = async (
 			: formatUnits(parseUnits(value, tokenIn.decimals), 0);
 		console.log("buildExchangeData", formattedValue);
 		switch (aggregator) {
-			// TODO : Use 0x
 			case ZERO_EX_ROUTER:
-				return await buildParaswapData(
+			return await buildZeroExData(
+					tokenIn,
+					tokenOut,
+					value,
+			);
+			/*	
+			return await buildParaswapData(
 					tokenIn,
 					tokenOut,
 					formattedValue,
@@ -67,6 +72,7 @@ export const buildExchangeData = async (
 					user,
 					true,
 				);
+				*/
 			case INCH_ROUTER:
 				return await buildOneInchData(
 					tokenIn,

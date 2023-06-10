@@ -3,7 +3,10 @@ import { ZERO_EX_ROUTER, FLASHLOAN, MORPHEUS, NEO } from "./constants";
 import { Trinity } from "./trinity";
 import { ethers } from "ethers";
 import { ActionsData, Token } from "./types";
-import { buildExchangeData, getPrices } from "./exchange";
+import {
+	buildExchangeData, /*, getPrices */
+	getPrices
+} from "./exchange";
 import { formatUnits, parseUnits } from "ethers/lib/utils";
 import {
 	buildParaswapBuyData,
@@ -332,7 +335,7 @@ export abstract class Actions {
 		withdrawValue: BigNumber,
 		maxPayback: boolean,
 		maxWithdraw: boolean,
-		maxIterations?: BigNumber,
+		//maxIterations?: BigNumber,
 	): ActionsData {
 		const calls = [
 			fromWallet
@@ -386,23 +389,30 @@ export abstract class Actions {
 		aggregator: string,
 		slippage: number,
 	): Promise<ActionsData> {
-		const exchangeRoute = await getPrices(
-			aggregator,
-			debtToken,
-			collateralToken,
-			formatUnits(debtValue, 0),
-			true,
-		);
-		const exchangeCalldata = await buildExchangeData(
-			aggregator,
-			debtToken,
-			collateralToken,
-			formatUnits(debtValue, 0),
-			exchangeRoute,
-			slippage,
-			smartWallet,
-			true,
-		);
+
+		let exchangeRoute: any = {};
+		let exchangeCalldata: any = "";
+
+		if (collateralMarketAddress !== debtMarketAddress) {
+			exchangeRoute = await getPrices(
+				aggregator,
+				debtToken,
+				collateralToken,
+				formatUnits(debtValue, 0),
+				true,
+			);
+
+			exchangeCalldata = await buildExchangeData(
+				aggregator,
+				debtToken,
+				collateralToken,
+				formatUnits(debtValue, 0),
+				//exchangeRoute,
+				slippage,
+				smartWallet,
+				true,
+			);
+		}
 
 		let argPos: number[];
 
@@ -453,6 +463,115 @@ export abstract class Actions {
 					), // TODO : Check if necessary with new argPos structure
 				),
 				Trinity.borrow(morphoMarketAddress, debtMarketAddress, debtValue),
+				Trinity.transfer(debtToken.address, FLASHLOAN, debtValue),
+			].filter((i) => i !== ""),
+			argPos,
+		);
+
+		const calldata = Trinity.executeFlashloan(
+			[debtToken.address],
+			[debtValue],
+			actionsCallData,
+			false,
+		);
+
+		return {
+			to: NEO,
+			data: calldata,
+		};
+	}
+
+
+
+	public static async leverageV3(
+		txDeadline: number,
+		fromWallet: boolean,
+		collateralToken: Token,
+		debtToken: Token,
+		address: string,
+		smartWallet: string,
+		collateralValue: BigNumber,
+		debtValue: BigNumber,
+		aggregator: string,
+		slippage: number,
+	): Promise<ActionsData> {
+
+		/*
+		const exchangeRoute = await getPrices(
+			aggregator,
+			debtToken,
+			collateralToken,
+			formatUnits(debtValue, 0),
+			true,
+		);
+		console.log("exchangeRoute")
+		console.log(exchangeRoute)
+
+		const exchangeCalldata = await buildExchangeData(
+			aggregator,
+			debtToken,
+			collateralToken,
+			formatUnits(debtValue, 0),
+			exchangeRoute,
+			slippage,
+			smartWallet,
+			true,
+		);
+		*/
+		let exchangeCalldata: any = "";
+
+		if (collateralToken.address !== debtToken.address) {
+			exchangeCalldata = await buildExchangeData(
+				aggregator,
+				debtToken,
+				collateralToken,
+				formatUnits(debtValue, 0),
+				slippage,
+				smartWallet,
+				true,
+			);
+		}
+
+		let argPos: number[];
+
+		
+		switch (true) {
+			case fromWallet && (collateralToken.address !== debtToken.address):
+				argPos = [0, 0, 0, 0, 0]; // .supply[4] = Amount, getted from .exchange
+				break;
+			case fromWallet:
+				argPos = [0, 0, 0, 0];
+				break;
+			case collateralToken.address !== debtToken.address:
+				argPos = [0, 0, 0, 0];  // .supply[4] = Amount, getted from .exchange
+				break;
+			default:
+				argPos = [0, 0, 0];
+				break;
+		}
+
+		const actionsCallData = Trinity.multicallFlashloan(
+			smartWallet,
+			txDeadline,
+			[
+				fromWallet
+					? Trinity.transferFrom(
+						collateralToken.address,
+						address,
+						collateralValue,
+					)
+					: "",
+				collateralToken.address !== debtToken.address
+					? Trinity.exchange(
+						aggregator,
+						debtToken.address,
+						collateralToken.address,
+						debtValue,
+						exchangeCalldata,
+					)
+					: "",
+				Trinity.supplyCollateralAaveV3(collateralToken.address, collateralValue.add(debtValue), address),
+				Trinity.borrowAaveV3(debtToken.address, debtValue, address, smartWallet, parseUnits("4")),
 				Trinity.transfer(debtToken.address, FLASHLOAN, debtValue),
 			].filter((i) => i !== ""),
 			argPos,
