@@ -45,35 +45,6 @@ export async function getZeroExPrices(
         };
         return route;
     }
-
-    /*
-    const queryParams = {
-        srcToken: tokenIn.address,
-        destToken: tokenOut.address,
-        srcDecimals: tokenIn.decimals.toString(),
-        destDecimals: tokenOut.decimals.toString(),
-        amount: formated
-            ? amount
-            : formatUnits(parseUnits(amount, tokenIn.decimals), 0),
-        side: "SELL",
-        network: "1",
-    };
-
-    const searchString = new URLSearchParams(queryParams);
-    const pricesURL = `${PARASWAP_API_URL}/prices/?${searchString}`;
-
-    try {
-        const {
-            data: { priceRoute },
-        } = await axios.get<{ priceRoute }>(pricesURL);
-        return priceRoute;
-    } catch (error) {
-        const route = {
-            destAmount: "0",
-        };
-        return route;
-    }
-    */
 }
 
 export async function buildZeroExData(
@@ -93,8 +64,6 @@ export async function buildZeroExData(
     const searchString = new URLSearchParams(queryParams);
 
     const pricesURL = `${ZERO_EX_API_URL}/swap/v1/quote/?${searchString}`;
-
-    console.log("buildZeroExData", pricesURL);
 
     try {
         const response = await fetch(pricesURL);

@@ -7,6 +7,7 @@ export type ActionsData = {
 };
 
 export type Token = {
+    [x: string]: any;
 	address: string;
 	name: string;
 	symbol: string;

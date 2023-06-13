@@ -4,14 +4,9 @@ import { Trinity } from "./trinity";
 import { ethers } from "ethers";
 import { ActionsData, Token } from "./types";
 import {
-	buildExchangeData, /*, getPrices */
-	getPrices
+	buildExchangeData, getPrices
 } from "./exchange";
 import { formatUnits, parseUnits } from "ethers/lib/utils";
-import {
-	buildParaswapBuyData,
-	getParaswapBuyPrices,
-} from "./exchange/paraswap";
 import { WETH, WSTETH } from "utils/constants";
 
 /// --- Class used for building tx calldatas
@@ -392,8 +387,16 @@ export abstract class Actions {
 	): Promise<ActionsData> {
 
 		let exchangeCalldata: any = "";
+		let exchangeRoute: any = "";
 
 		if (collateralMarketAddress !== debtMarketAddress) {
+			exchangeRoute = await getPrices(
+				aggregator,
+				debtToken,
+				collateralToken,
+				formatUnits(debtValue, 0),
+				true
+			);
 			exchangeCalldata = await buildExchangeData(
 				aggregator,
 				debtToken,

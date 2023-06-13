@@ -1,10 +1,10 @@
-import { ZERO_EX_ROUTER, INCH_ROUTER } from "../constants";
+import { ZERO_EX_ROUTER, INCH_ROUTER, ODOS_ROUTER } from "../constants";
 import { formatUnits, parseUnits } from "ethers/lib/utils";
 
 import { buildOneInchData, getOneInchPrices } from "./oneInch";
-import { /*buildParaswapData,*/ getParaswapPrices } from "./paraswap";
-import { buildZeroExData } from "./zeroEx";
+import { buildZeroExData, getZeroExPrices } from "./zeroEx";
 import { Token } from "types";
+import { buildOdosData, getOdosPrices } from "./odos";
 
 export const getPrices = async (
 	aggregator: string,
@@ -17,11 +17,14 @@ export const getPrices = async (
 		const formattedValue = formatted
 			? value
 			: formatUnits(parseUnits(value, tokenIn.decimals), 0);
-		console.log("getPrices", formattedValue);
 		switch (aggregator) {
-			// TODO : Use 0x
-			case ZERO_EX_ROUTER:
-				return await getParaswapPrices(tokenIn, tokenOut, formattedValue, true);
+			case ZERO_EX_ROUTER: {
+				const price = await getZeroExPrices(tokenIn, tokenOut, formattedValue);
+				return {
+					...price,
+					destAmount: price["buyAmount"],
+				};
+			}
 			case INCH_ROUTER: {
 				const price = await getOneInchPrices(
 					tokenIn,
@@ -32,6 +35,22 @@ export const getPrices = async (
 				return {
 					...price,
 					destAmount: price["toTokenAmount"],
+				};
+
+			}
+			case ODOS_ROUTER: {
+				const tokenWAmount = {
+					...tokenIn,
+					amount: formattedValue,
+				};
+
+				const price = await getOdosPrices(
+					[tokenWAmount],
+					[tokenOut],
+				);
+				return {
+					...price,
+					destAmount: price["outValues"],
 				};
 			}
 			default:
@@ -54,26 +73,15 @@ export const buildExchangeData = async (
 		const formattedValue = formatted
 			? value
 			: formatUnits(parseUnits(value, tokenIn.decimals), 0);
-		console.log("buildExchangeData", formattedValue);
 		switch (aggregator) {
-			case ZERO_EX_ROUTER:
-			return await buildZeroExData(
-					tokenIn,
-					tokenOut,
-					value,
-			);
-			/*	
-			return await buildParaswapData(
+			case ZERO_EX_ROUTER: {
+				return await buildZeroExData(
 					tokenIn,
 					tokenOut,
 					formattedValue,
-					route,
-					slippage,
-					user,
-					true,
 				);
-				*/
-			case INCH_ROUTER:
+			}
+			case INCH_ROUTER: {
 				return await buildOneInchData(
 					tokenIn,
 					tokenOut,
@@ -82,6 +90,19 @@ export const buildExchangeData = async (
 					user,
 					true,
 				);
+			}
+			case ODOS_ROUTER: {
+				const tokenWAmount = {
+					...tokenIn,
+					amount: formattedValue,
+				};
+
+				return await buildOdosData(
+					[tokenWAmount],
+					[tokenOut],
+				);
+			}
+
 			default:
 				throw new Error("Invalid aggregator");
 		}
