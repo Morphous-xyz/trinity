@@ -494,7 +494,7 @@ export abstract class Trinity {
 		_calldata = encodeAbiParameters(parseAbiParameters("bytes1, bytes"), [
 			TOKEN_ACTIONS_MODULE_ID,
 			_functionCalldata,
-		]);		
+		]);
 
 		return _calldata;
 	}
@@ -507,6 +507,21 @@ export abstract class Trinity {
 			"depositSTETH(uint256)",
 			[_amount],
 		);
+
+		_calldata = encodeAbiParameters(parseAbiParameters("bytes1, bytes"), [
+			TOKEN_ACTIONS_MODULE_ID,
+			_functionCalldata,
+		]);
+
+		return _calldata;
+	}
+
+	public static wrapstETH(_amount: BigNumber): BytesLike {
+		let _calldata: string;
+		let _functionCalldata: any;
+
+		_functionCalldata = this.token_module_interface.encodeFunctionData("wrapstETH(uint256)", [_amount]);
+
 
 		_calldata = encodeAbiParameters(parseAbiParameters("bytes1, bytes"), [
 			TOKEN_ACTIONS_MODULE_ID,

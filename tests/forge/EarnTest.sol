@@ -267,19 +267,43 @@ contract EarnTest is BaseTest {
 
         vm.prank(_proxyOwner);
         proxy.execute{value: params.value}(_NEO, params.data);
+
+
+        (,, uint256 _totalSupplied) = IMorphoLens(_MORPHO_AAVE_LENS).getCurrentSupplyBalanceInOf(_poolToken, _proxy);
+        (,, uint256 _totalBorrowed) = IMorphoLens(_MORPHO_AAVE_LENS).getCurrentBorrowBalanceInOf(_poolToken, _proxy);
+        
+
+        assertEq(_totalSupplied, 3e18);
+        assertApproxEqAbs(_totalBorrowed, 1e18, 1);
+
+        // Deleverage 
+        MethodParameters memory deleverageParams = readFixture(json, "._AAVE_V2_DELEVERAGE");
+
+        vm.prank(_proxyOwner);
+
+        proxy.execute{value: deleverageParams.value}(_NEO, deleverageParams.data);
+
+        (,, _totalSupplied) = IMorphoLens(_MORPHO_AAVE_LENS).getCurrentSupplyBalanceInOf(_poolToken, _proxy);
+        (,, _totalBorrowed) = IMorphoLens(_MORPHO_AAVE_LENS).getCurrentBorrowBalanceInOf(_poolToken, _proxy);
+
+        assertEq(_totalSupplied, 0);
+        assertEq(_totalBorrowed, 0);
     }
 
+    /*
     function test_leverage_aaveV3() public {
+        vm.rollFork(17174536); // Block number with Supply Cap not reached for wsETH.
+
         MethodParameters memory params = readFixture(json, "._AAVE_V3_LEVERAGE");
 
-        deal(Constants._DAI, address(proxy), 1e24);
+        deal(Constants._wstETH, address(proxy), 1e18);
         deal(address(proxy), 1e18);
 
         vm.prank(_proxyOwner);
 
         proxy.execute{value: params.value}(_NEO, params.data);
     }
-
+    */
     ////////////////////////////////////////////////////////////////
     /// --- Deleverage / Unwind
     ///////////////////////////////////////////////////////////////

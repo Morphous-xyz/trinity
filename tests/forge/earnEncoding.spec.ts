@@ -256,7 +256,7 @@ test("preparing calldata for AAVE_V3 repay + withdraw", () => {
 /// --- Leverage / Folding
 ///////////////////////////////////////////////////////////////
 
-test("preparing calldata for AAVE_V2 leverage", async () => {
+test("preparing calldata for AAVE_V2 leverage / deleverage ", async () => {
     const _market = MORPHO_AAVE;
     const _collateralMarketAddress = WETH_AAVE;
     const _debtMarketAddress = WETH_AAVE;
@@ -290,37 +290,40 @@ test("preparing calldata for AAVE_V2 leverage", async () => {
 
 
     registerFixture("_AAVE_V2_LEVERAGE", calldata, amount);
+
+
+    const deleverageCalldata: any = (await Actions.deleverageV2(
+        _market,
+        _deadline,
+        false,
+        _collateralMarketAddress,
+        _debtMarketAddress,
+        _collateralToken,
+        _debtToken,
+        _onBehalf,
+        _onBehalf,
+        _collateralAmount,
+        _debtAmount,
+        _slippage,
+        _aggregator,
+        true
+    )).data;
+
+    registerFixture("_AAVE_V2_DELEVERAGE", deleverageCalldata, amount);
+
 });
 
 test("preparing calldata for AAVE_V3 leverage", async () => {
-
-    const _collateralToken: Token = { address: DAI, name: "DAI", symbol: "DAI", decimals: 18 };
+    const _collateralToken: Token = { address: WSTETH, name: "WSTETH", symbol: "WSTETH", decimals: 18 };
     const _debtToken: Token = { address: WETH, name: "WETH", symbol: "WETH", decimals: 18 };
     const _onBehalf = PROXY_TEST_ADDRESS;
 
-    const _collateralAmount = parseUnits("1", 24);
-    const _debtAmount = parseUnits("1", 18);
+    const _collateralAmount = parseUnits("1", 18);
+    const _debtAmount = parseUnits("2", 18);
     const _deadline: any = 15;
 
     const _aggregator = ZERO_EX_ROUTER;
     const _slippage = 0.5;
-
-
-    /*
-    address _NEO = 0x55555555D7b62E4Bf2080CB1912861da2cb91f0e;
-        address _FLASHLOAN = 0x666666660b6296b3D37dA3F7eFC7D475F95b6211;
-
-        address _proxyTest = 0x43D428245483A502df263234b56B238c532c93Dd;
-        address _proxyOwner = 0x98Bac71943d8aa2E7F620f0EB2e620A8F7ea4E8b;
-
-        // Supply _userData.
-        address _collateral = Constants._DAI;
-        address _debt = Constants._WETH;
-        uint256 _collateralAmount = 1e24;
-        uint256 _debtAmount = 1e18;
-        uint256 _deadline = block.timestamp + 15;
-        uint256 _toFlashloan = 1e18;
-    */
 
     const calldata: any = (await Actions.leverageV3(
         _deadline,
