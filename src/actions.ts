@@ -7,7 +7,6 @@ import {
 	buildExchangeData, getPrices
 } from "./exchange";
 import { formatUnits, parseUnits } from "ethers/lib/utils";
-import { WETH, WSTETH } from "utils/constants";
 
 /// --- Class used for building tx calldatas
 /// - Using Trinity
@@ -562,7 +561,6 @@ export abstract class Actions {
 	}
 
 
-	/*
 	public static async leverageV3(
 		txDeadline: number,
 		fromWallet: boolean,
@@ -631,8 +629,92 @@ export abstract class Actions {
 			data: calldata,
 		};
 	}
-	*/
 
+
+	public static async deleverageV3(
+		txDeadline: number,
+		toWallet: boolean,
+		paybackToken: Token,
+		withdrawToken: Token,
+		address: string,
+		smartWallet: string,
+		paybackValue: BigNumber,
+		withdrawValue: BigNumber,
+		slippage: number,
+		aggregator: string,
+		max: boolean,
+	): Promise<ActionsData> {
+		const flashloanAmount = paybackValue.add(paybackValue.div(100));
+
+		let exchangeCalldata: any = "";
+
+		if (paybackToken.address !== withdrawToken.address) {
+			exchangeCalldata = await buildExchangeData(
+				aggregator,
+				withdrawToken,
+				paybackToken,
+				formatUnits(paybackValue, 0),
+				slippage,
+				smartWallet,
+				true,
+			);
+		}
+
+		const argPos = new Array(paybackToken.address !== withdrawToken.address ? 4 : 3).fill(0);
+
+
+		const actionsCallData = Trinity.multicallFlashloan(
+			smartWallet,
+			txDeadline,
+			[
+				Trinity.repayAaveV3(
+					paybackToken.address,
+					max ? ethers.constants.MaxUint256 : paybackValue,
+					address,
+				),
+				Trinity.withdrawCollateralAaveV3(
+					withdrawToken.address,
+					max ? ethers.constants.MaxUint256 : withdrawValue,
+					address,
+					toWallet ? smartWallet : address,
+				),
+				paybackToken.address !== withdrawToken.address
+					? Trinity.exchange(
+						ZERO_EX_ROUTER,
+						withdrawToken.address,
+						paybackToken.address,
+						ethers.constants.MaxUint256,
+						exchangeCalldata,
+					)
+					: "",
+				Trinity.transfer(paybackToken.address, FLASHLOAN, flashloanAmount),
+			].filter((i) => i !== ""),
+			argPos,
+		);
+
+		const calldata = toWallet
+			? Trinity.executeFlashloanWithReceiver(
+				[withdrawToken.address],
+				[paybackToken.address],
+				[flashloanAmount],
+				actionsCallData,
+				address,
+				false,
+			)
+			: Trinity.executeFlashloan(
+				[paybackToken.address],
+				[flashloanAmount],
+				actionsCallData,
+				false,
+			);
+
+		return {
+			to: NEO,
+			data: calldata,
+		};
+	}
+
+	/*
 	public static async leverageV3(
 		txDeadline: number,
 		fromWallet: boolean,
@@ -746,6 +828,6 @@ export abstract class Actions {
 			data: calldata,
 		};
 	}
-
+	*/
 
 }

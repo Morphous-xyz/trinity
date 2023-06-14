@@ -1,11 +1,14 @@
 // TODO : Leveraged DAI position
 // TODO : Leveraged AAVE V3 stETH position
 
-import { BigNumber, BytesLike } from "ethers";
-import { WETH, aWETH, MORPHO_AAVE, aSTETH, FLASHLOAN } from "./constants";
+import { BigNumber, BytesLike, ethers } from "ethers";
+import { WETH, aWETH, MORPHO_AAVE, aSTETH, FLASHLOAN, ZERO_EX_ROUTER } from "./constants";
 import { Trinity } from "trinity";
 import { Actions } from "actions";
 import { ActionsData } from "types";
+import { buildExchangeData } from "index";
+import { stETH } from "utils/constants";
+import { formatUnits, parseUnits } from "ethers/lib/utils";
 
 // --- Class used for building tx calldatas for strategies (Earn)
 /// - Using Actions
@@ -36,7 +39,7 @@ export abstract class Earn {
 				Trinity.borrow(MORPHO_AAVE, aWETH, flashloanValue), // Borrow aWETH from AaveV2
 				Trinity.transfer(WETH, FLASHLOAN, flashloanValue), // Repay flashloan
 			],
-			[0, 0, 0, 0, 0, 0], // TODO : good argPos
+			[0, 0, 0, 0, 0, 0],
 		);
 
 		// Flashloan WETH and executing actions
@@ -52,36 +55,47 @@ export abstract class Earn {
 		from: string,
 		toWallet: boolean,
 		txDeadline: number,
-		paybackValue: BigNumber,
-		withdrawValue: BigNumber,
+		totalSupplied: BigNumber,
+		totalBorrowed: BigNumber,
 		slippage: number,
-		smartWallet?: string,
-	): ActionsData {
-		return await Actions.deleverage(
-			MORPHO_AAVE,
-			txDeadline,
-			toWallet,
-			aWETH,
-			aSTETH,
-			{
-				address: WETH,
-				name: "",
-				symbol: "",
-				decimals: 18,
-			},
-			{
-				address: WETH,
-				name: "",
-				symbol: "",
-				decimals: 18,
-			},
-			from,
-			smartWallet ? smartWallet : "",
-			paybackValue,
-			withdrawValue,
+		address: string,
+		smartWallet: string,
+	): Promise<BytesLike> {
+		const exchangeCalldata = await buildExchangeData(
+			ZERO_EX_ROUTER,
+			{ address: stETH, name: "stETH", symbol: "stETH", decimals: 18 },
+			{ address: WETH, name: "WETH", symbol: "WETH", decimals: 18 },
+			formatUnits(totalSupplied, 0),
 			slippage,
-			false,
-			[0, 0, 0, 0, 0, 0],
+			smartWallet,
+			true,
+		);
+		
+		const actionsCallData = Trinity.multicallFlashloan(
+			toWallet ? address : smartWallet,
+			txDeadline,
+			[
+				Trinity.repay(MORPHO_AAVE, aWETH, from, ethers.constants.MaxUint256),
+				Trinity.withdraw(MORPHO_AAVE, aSTETH, ethers.constants.MaxUint256),
+				Trinity.exchange(
+					ZERO_EX_ROUTER,
+					aWETH,
+					WETH,
+					totalBorrowed,
+					exchangeCalldata
+				),
+				Trinity.transfer(WETH, FLASHLOAN, totalBorrowed),
+			],
+			[0, 0, 0, 0],
+		);
+
+		return Trinity.executeFlashloanWithReceiver(
+			[aWETH],
+			[aWETH],
+			[totalBorrowed],
+			actionsCallData,
+			toWallet ? address : smartWallet,
+			false
 		);
 	}
 }
