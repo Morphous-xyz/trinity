@@ -9,7 +9,7 @@ jobs:
     name: Unit tests
     strategy:
       matrix:
-        node: ['10.x', '12.x']
+        node: ['18.x']
 
     runs-on: ubuntu-latest
 
@@ -33,6 +33,11 @@ jobs:
           key: yarn-${{ hashFiles('**/yarn.lock') }}
           restore-keys: |
             yarn-
+
+      - name: Install Foundry
+        uses: foundry-rs/foundry-toolchain@v1
+        with:
+          version: nightly
 
       - name: Install dependencies
         run: yarn install --frozen-lockfile

@@ -1,0 +1,15 @@
+[profile.default]
+verbosity = 3
+solc = "0.8.20"
+evm_version = "shanghai"
+src = "tests/forge"
+libs = ["node_modules", "lib"]
+fs_permissions = [{ access = "read", path = "./tests/forge/test-calldata.json"}]
+
+remappings = [
+    "morphous=lib/morphous/src",
+]
+
+[fmt]
+tab-width = 4
+line-length = 120
